@@ -2,12 +2,12 @@
 
 #include "stdlib.h"
 #include "player.h"
-#include "cards.h"
-#include "baralho.h"
+#include "card.h"
+#include "pilha.h"
 
 int rodada_atual = 0;
 Player *head = (Player*)malloc(sizeof(Player));
-Player *atual = *head;
+Player *atual = head;
 
 void iniciar_partida() 
 	quantidade_players();

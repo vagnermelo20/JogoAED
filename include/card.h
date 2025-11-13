@@ -4,7 +4,7 @@ typedef enum Valor {
 	ZERO,
 	UM,
 	DOIS,
-	TRÊS,
+	TRES,
 	QUATRO,
 	CINCO,
 	SEIS,
