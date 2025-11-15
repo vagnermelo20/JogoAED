@@ -1,13 +1,15 @@
 #pragma once
-#include "card.h"
+#include "carta.h"
 
 
-typedef struct CardNode {
-	Card* card;
-	struct CardNode *next;
-} CardNode; // Lista de cartas, representa a mao de jogador
+typedef struct CartaNode {
+	Carta* carta;
+	struct CartaNode *next;
+} CartaNode; // Lista de cartas, representa a mao de jogador
 
-int count(CardNode* mao); //Contagem de cartas
-void remove_all_cards(CardNode** head); // Chamada para remover todas as cartas
 
-void ordenar_mao(CardNode **mao);
+int count_mao(CartaNode* mao); //Contagem de cartas
+// Carta* carta_selecionada(CartaNode** mao, Carta* carta);
+// CartaNode* exibir_mao_player(CartaNode* mao);
+// void ordenar_mao(CartaNode **mao);
+// void remove_all_cards(CartaNode** mao); // Chamada para remover todas as cartas

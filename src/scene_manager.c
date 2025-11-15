@@ -1,3 +1,4 @@
+
 #include "scene_manager.h"
 
 typedef enum {
@@ -39,3 +40,4 @@ void EndSceneManager(void) {
 bool GameShouldQuit(void) {
     return scene_state == NONE;
 }
+
