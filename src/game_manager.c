@@ -1,6 +1,7 @@
 #pragma once
 #include "game_manager.h"
 #include "pilha.h"
+#include "bot.h"
 #include "raylib.h"
 #include <stdio.h>
 #include <stdlib.h>
