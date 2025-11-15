@@ -4,6 +4,7 @@
 #include <time.h>
 #include "raylib.h"
 #include "carta.h"
+#include "bot.h"
 #include "pilha.h"
 #include "player.h"
 
@@ -13,7 +14,7 @@
 
 #define MAX_CARTAS_UI 20
 
-// Protótipos de funções
+// Protï¿½tipos de funï¿½ï¿½es
 void processarTurnoJogador(CartaUI* cartasUI, int numCartasUI, Assets* assets);
 void processarTurnoCPU();
 Cor escolherCorINCOLOR(int ehJogadorHumano);
@@ -36,12 +37,12 @@ int main() {
     int aguardandoEscolhaCor = 0;
     Texture2D background = LoadTexture("assets/background_2.png");
 
-    // Guardar referência do jogador humano
+    // Guardar referï¿½ncia do jogador humano
     Player* jogadorHumano = game.jogador_da_vez;
 
     // Loop principal
     while (!WindowShouldClose()) {
-        // Verificar vitória
+        // Verificar vitï¿½ria
         verificarVitoria();
 
         if (game.jogoTerminado) {
@@ -53,7 +54,7 @@ int main() {
         desenharMaoJogador(jogadorHumano, &assets, cartasUI, &numCartasUI);
 
         // Processar turno
-        if (strcmp(game.jogador_da_vez->nome, "Você") == 0) {
+        if (strcmp(game.jogador_da_vez->nome, "Vocï¿½") == 0) {
             // Turno do jogador humano
             if (aguardandoEscolhaCor) {
                 // QUEM JOGOU O INCOLOR escolhe a cor
@@ -91,7 +92,7 @@ int main() {
         else {
             // Turno da CPU
             processarTurnoCPU();
-            WaitTime(0.5);  // Pausa para visualização
+            WaitTime(0.5);  // Pausa para visualizaï¿½ï¿½o
         }
 
         // Desenhar
@@ -124,7 +125,7 @@ int main() {
 void processarTurnoJogador(CartaUI* cartasUI, int numCartasUI, Assets* assets) {
     Vector2 mousePos = GetMousePosition();
 
-    // Verificar se tem que comprar cartas obrigatórias (precisa clicar no baralho)
+    // Verificar se tem que comprar cartas obrigatï¿½rias (precisa clicar no baralho)
     if (game.comprar_cartas > 0) {
         Rectangle baralhoRect = { LARGURA_TELA / 2 + 60, ALTURA_TELA / 2 - ALTURA_CARTA / 2,
                                  LARGURA_CARTA, ALTURA_CARTA };
@@ -139,7 +140,7 @@ void processarTurnoJogador(CartaUI* cartasUI, int numCartasUI, Assets* assets) {
         return;
     }
 
-    // Verificar se está bloqueado (passa automaticamente após 1 segundo)
+    // Verificar se estï¿½ bloqueado (passa automaticamente apï¿½s 1 segundo)
     static double tempoBloqueio = 0;
     if (game.jogador_bloqueado) {
         if (tempoBloqueio == 0) {
@@ -154,13 +155,13 @@ void processarTurnoJogador(CartaUI* cartasUI, int numCartasUI, Assets* assets) {
     }
     tempoBloqueio = 0;
 
-    // Clique no baralho para comprar (NÃO passa a vez automaticamente)
+    // Clique no baralho para comprar (Nï¿½O passa a vez automaticamente)
     Rectangle baralhoRect = { LARGURA_TELA / 2 + 60, ALTURA_TELA / 2 - ALTURA_CARTA / 2,
                              LARGURA_CARTA, ALTURA_CARTA };
 
     if (CheckCollisionPointRec(mousePos, baralhoRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         (game, game.jogador_da_vez);
-        // Jogador pode continuar tentando jogar após comprar
+        // Jogador pode continuar tentando jogar apï¿½s comprar
         return;
     }
 
@@ -172,14 +173,14 @@ void processarTurnoJogador(CartaUI* cartasUI, int numCartasUI, Assets* assets) {
                 Carta* cartaTopo = check_top(game.pilha);
 
                 if (cartaTopo != NULL && validar_jogada(cartaSelecionada, game.pilha)) {
-                    // Remover carta da mão
+                    // Remover carta da mï¿½o
                     Carta* carta = jogar_pilha(game.jogador_da_vez, count(cartaSelecionada));
 
                     if (carta != NULL) {
                         jogada(game.jogador_da_vez, carta);
                         free(carta);
 
-                        // Sempre passa a vez após jogar uma carta
+                        // Sempre passa a vez apï¿½s jogar uma carta
                         // (a menos que seja INCOLOR, que precisa escolher cor primeiro)
                         if (cartaSelecionada->cor != INCOLOR) {
                             next_player();
@@ -191,7 +192,7 @@ void processarTurnoJogador(CartaUI* cartasUI, int numCartasUI, Assets* assets) {
         }
     }
 
-    // Tecla SPACE para passar a vez (após comprar ou quando não tem jogada)
+    // Tecla SPACE para passar a vez (apï¿½s comprar ou quando nï¿½o tem jogada)
     if (IsKeyPressed(KEY_SPACE)) {
         next_player();
     }
@@ -199,92 +200,51 @@ void processarTurnoJogador(CartaUI* cartasUI, int numCartasUI, Assets* assets) {
 
 // Processa o turno da CPU
 void processarTurnoCPU() {
-    // Verificar se tem que comprar cartas obrigatórias
+    // Verificar se tem que comprar cartas obrigatï¿½rias
     if (game.comprar_cartas > 0) {
         for (int i = 0; i < game.comprar_cartas; i++) {
-            puxar_baralho(game.jogador_da_vez, game.baralho);
+            puxar_baralho(&game.jogador_da_vez, &game.baralho);
         }
         game.comprar_cartas = 0;
         next_player();
         return;
     }
 
-    // Verificar se está bloqueado
+    // Verificar se estï¿½ bloqueado
     if (game.jogador_bloqueado) {
         game.jogador_bloqueado = 0;
         next_player();
         return;
     }
 
-    // Procurar carta jogável
+    // Procurar carta jogï¿½vel
     Carta* cartaTopo = check_top(game.pilha);
     CartaNode* cartaAtual = game.jogador_da_vez->mao;
-    Carta* melhorCarta = NULL;
 
-    while (cartaAtual != NULL) {
-        if (validar_jogada(cartaAtual, game.pilha)) {
-            melhorCarta = cartaAtual;
+    int jogadaBot = decidirJogadaBot(game.jogador_da_vez->mao);
 
-            // Priorizar cartas especiais
-            if (cartaAtual->carta->valor >= MAIS_2) {
-                break;
-            }
-        }
-        cartaAtual = cartaAtual->next;
+    if (jogadaBot <= 0) { // O gemini nÃ£o escolheu nehuma carta
+        puxar_baralho(&game.jogador_da_vez, &game.baralho);
+        next_player();
+        return;    
     }
 
-    if (melhorCarta != NULL) {
+    if (jogadaBot >= 1) {
         // Jogar carta
-        Carta* carta = jogar_pilha(game.jogador_da_vez, count(melhorCarta));
+        Carta* carta = jogar_pilha(game.jogador_da_vez, jogadaBot);
 
-        if (carta != NULL) {
-            jogada(game.jogador_da_vez, carta);
-
-            // Se for INCOLOR, escolher cor
-            if (carta->cor == INCOLOR) {
-                game.corAtual = escolherCorINCOLOR(0);
-            }
-
-            free(carta);
-        }
+    if (carta != NULL) {
+        aplicar_efeito_carta(*game.jogador_da_vez, carta); //ljnnkjbhbkk
+        
+    if (carta->cor == INCOLOR) {
+        game.corAtual = escolherCorINCOLOR(0);
     }
-    else {
-        // Comprar carta
-        puxar_baralho(game.jogador_da_vez, game.baralho);
-    }
-
+}
     next_player();
+    }
 }
 
-// Escolhe cor para INCOLOR (CPU)
-Cor escolherCorINCOLOR(int ehJogadorHumano) {
-    if (ehJogadorHumano) {
-        return VERMELHO;  // Será escolhido pela UI
-    }
-
-    // CPU: contar cores na mão
-    int contadorCores[4] = { 0, 0, 0, 0 };
-    CartaNode* carta = game.jogador_da_vez->mao;
-
-    while (carta != NULL) {
-        if (carta->carta->cor != INCOLOR) {
-            contadorCores[carta->carta->cor]++;
-        }
-        carta = carta->next;
-    }
-
-    // Escolher cor mais comum
-    int maxCor = 0;
-    for (int i = 1; i < 4; i++) {
-        if (contadorCores[i] > contadorCores[maxCor]) {
-            maxCor = i;
-        }
-    }
-
-    return (Cor)maxCor;
-}
-
-// Verifica se alguém venceu
+// Verifica se alguï¿½m venceu
 void verificarVitoria() {
     PlayerNode* temp = game.jogador_da_vez;
 
