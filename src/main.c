@@ -7,6 +7,8 @@
 #include "bot.h"
 #include "pilha.h"
 #include "player.h"
+#include <curl/curl.h>
+#include "cJSON.h"
 
 
 #include "game_manager.h"
