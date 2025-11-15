@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include "render_game.h"
 #include "game_manager.h"
+#include "stdlib.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -124,15 +125,18 @@ void desenharCarta(Carta* carta, Vector2 posicao, Assets* assets, int mostrarFre
 // Desenha a mão do jogador
 void desenharMaoJogador(CartaNode* mao, Assets* assets, CartaUI* cartasUI, int* numCartas) {
     *numCartas = 0;
-    Carta* carta = mao->carta;
+    if (mao == NULL) return; // Proteção se a mão estiver vazia
 
+    // Assumindo que 'count_mao' é a função correta
     float espacamento = 15;
-    float totalLargura = count(mao) * (LARGURA_CARTA + espacamento);
+    float totalLargura = count_mao(mao) * (LARGURA_CARTA + espacamento);
     float startX = (LARGURA_TELA - totalLargura) / 2;
     float startY = ALTURA_TELA - ALTURA_CARTA - 20;
 
     int i = 0;
-    while (carta != NULL && i < 20) {  // Limite de 20 cartas visíveis
+    CartaNode* noAtual = mao; // Iterar com o nó
+    while (noAtual != NULL && i < 20) {  // Limite de 20 cartas visíveis
+        Carta* carta = noAtual->carta; // Pegar a carta do nó
         Vector2 pos = { startX + i * (LARGURA_CARTA + espacamento), startY };
 
         if (cartasUI != NULL) {
@@ -143,7 +147,7 @@ void desenharMaoJogador(CartaNode* mao, Assets* assets, CartaUI* cartasUI, int* 
 
         desenharCarta(carta, pos, assets, 1);
 
-        mao = mao->next;
+        noAtual = noAtual->next;
         i++;
     }
 
@@ -154,20 +158,22 @@ void desenharMaoJogador(CartaNode* mao, Assets* assets, CartaUI* cartasUI, int* 
 void desenharPilhaJogo(Pilha** pile, Assets* assets, Cor corAtual) {
     Vector2 pos = { LARGURA_TELA / 2 - LARGURA_CARTA - 60, ALTURA_TELA / 2 - ALTURA_CARTA / 2 };
 
-    if ((*pile)->carta != NULL) {
-        Carta* cartaModificada = (*pile)->carta;
-
-        // Se for INCOLOR, usar a cor atual
-        if (cartaModificada->cor == INCOLOR && cartaModificada->valor != MAIS_4) {
-            cartaModificada->cor = corAtual;
-        }
-
-        desenharCarta(&cartaModificada, pos, assets, 1);
-    }
-    else {
+    // Proteção contra ponteiro nulo e pilha vazia
+    if (pile == NULL || *pile == NULL || (*pile)->carta == NULL) {
         DrawRectangle(pos.x, pos.y, LARGURA_CARTA, ALTURA_CARTA, LIGHTGRAY);
         DrawText("Pilha\nVazia", pos.x + 15, pos.y + 50, 20, DARKGRAY);
+        return;
     }
+
+    Carta cartaModificada = *((*pile)->carta); // Fazer uma cópia para não modificar o estado
+
+    // Se for INCOLOR, usar a cor atual
+    if (cartaModificada.cor == INCOLOR && cartaModificada.valor != MAIS_4) {
+        cartaModificada.cor = corAtual;
+    }
+
+    desenharCarta(&cartaModificada, pos, assets, 1);
+
 
     // Desenhar indicador de cor atual se for INCOLOR
     if ((*pile)->carta != NULL && (*pile)->carta->cor == INCOLOR) {
@@ -208,9 +214,6 @@ void desenharInfoJogo( Assets* assets) {
     // Jogador atual com destaque
     char textoJogador[100];
     sprintf(textoJogador, "Turno: %s", game.jogador_da_vez);
-
-    Color corTurno = (strcmp(game.jogador_da_vez, "Você") == 0) ? GREEN : ORANGE;
-    DrawRectangle(15, 55, 250, 35, Fade(corTurno, 0.3f));
     DrawText(textoJogador, 20, 60, 25, BLACK);
 
     // Direção
@@ -227,13 +230,21 @@ void desenharInfoJogo( Assets* assets) {
 
     // Outros jogadores
     int y = 150;
-    PlayerNode* temp = game.jogador_da_vez->next;
-    while (temp != game.jogador_da_vez) {
-        char info[100];
-        sprintf(info, "%s: %d cartas", temp, count(temp));
-        DrawText(info, LARGURA_TELA - 200, y, 18, WHITE);
-        y += 25;
-        temp = temp->next;
+    if (game.jogador_da_vez != NULL) {
+        PlayerNode* temp = game.jogador_da_vez->next;
+
+        // 2. O loop deve parar se a lista for quebrada (temp == NULL) ou se der a volta
+        while (temp != NULL && temp != game.jogador_da_vez) {
+            char info[100];
+
+            // 3. (BUG LÓGICO CORRIGIDO) Formatar a string 'info' com dados reais
+            int numCartas = count_mao(temp->mao); // Usando a função de card_node.c
+            sprintf(info, "%s: %d cartas", temp->nome, numCartas);
+
+            DrawText(info, LARGURA_TELA - 200, y, 18, WHITE);
+            y += 25;
+            temp = temp->next;
+        }
     }
 
     // Instruções
