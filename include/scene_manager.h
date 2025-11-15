@@ -3,7 +3,8 @@
 
 //typedef enum Scene {
 //	//INTRO,
-//	//PLAYER_SELECT,
+//	//MENU_CARTA,
+//   SAIR
 //	GAME
 //} Scene;
 

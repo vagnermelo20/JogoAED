@@ -3,6 +3,6 @@
 #include "card.h"
 
 typedef struct Player {
-	char* nome;
+	char* nome[21];
 	int rodadas;
 } Player;

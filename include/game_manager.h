@@ -21,21 +21,15 @@ typedef struct PlayerNode {
     struct PlayerNode *prev;
 } PlayerNode;
 
-Card* remove_player_first(PlayerNode **player) {
-	if (!player || !*player) return NULL;
-	CardNode* aux = *player;
-	Card* card = aux->card;
-	*player = aux->next;
-	free(aux);
-	return card;
-}
-
 
 // Init
-void init_player_list(); // coloca todos os jogadores na lista
 
-void definir_pilha();
-void iniciar_jogo();
+void initialize_baralho(Pilha** baralho);
+void initialize_pilha(Pilha **pilha);
+void initialize_game(int num_players);
+void deal_initial_hands(int num_players, int hand_size);
+void create_player_list(int num_players);
+void init_player_list(); // coloca todos os jogadores na lista
 void distribuir_cartas(PlayerNode** player, Pilha** baralho, int num_cartas_distribuidas);
 
 
@@ -44,6 +38,7 @@ void game_loop();
 void next_player();
 void start_turn_checks(); 
 void end_turn_checks();
+
 
 // Player & Relacionados
 Card* carta_selecionada(CardNode** mao, Card* carta);
@@ -60,6 +55,7 @@ void add_4_cards(CardNode** mao, Pilha** baralho); // Chamada pra adicionar quat
 
 // CardNode, Pilha
 CardNode jogada(CardNode** mao, Pilha* pilha, Card* carta);
+void add_pilha(Pilha** head, Card* card);
 Card* validar_jogada(CardNode **mao, Card* carta, Pilha* pilha);
 Card* validar_topo(Card* carta, Pilha** pilha);
 
@@ -69,7 +65,7 @@ void iniciar_pilha();
 
 
 // Pilha, Baralho
-void passagem_pilha_baralho();
+void refill(Pilha **pilha, Pilha **baralho);
 
 // Player Functions
 Player jogador_ganhador(Player atual);

@@ -1,5 +1,6 @@
 #pragma once
 #include "game_manager.h"
+#include "pilha.h"
 #include "raylib.h"
 
 
@@ -25,6 +26,60 @@ static PlayerNode* lista_jogadores = NULL;
 static PlayerNode* jogador_da_vez = NULL;
 
 // Init
+
+void initialize_baralho(Pilha** baralho) {
+	if (*baralho != NULL) {
+		return;
+	}
+	for (baralho = 0; baralho < cartas; baralho++) {
+		Pilha* nova = (Pilha*)malloc(sizeof(Pilha));
+		if (nova == NULL) return;
+		nova->carta->valor = GetRandomValue(0, 9);
+		nova->carta->cor = GetRandomValue(1, 4);
+		add_pilha(&baralho, nova);
+		*baralho = nova;
+	}
+}
+
+void shuffle_deck(Pilha** baralho){
+	
+}
+
+void initialize_pilha(Pilha** pilha, Pilha** baralho) {
+	if (*pilha != NULL) {
+		return;
+	}
+	(*pilha) = (Pilha*)malloc(sizeof(Pilha));
+	(*pilha)->carta = get_top_discard(baralho);
+	(*pilha)->next = NULL;
+}
+
+
+void start_game() {
+	// Implementar lógica para iniciar o jogo
+
+}
+
+
+void initialize_game(int num_players) {
+	initialize_baralho(baralho);
+	create_player_list(num_players);
+	deal_initial_hands(num_players, 7);
+	shuffle_deck(baralho);
+	start_game();
+}
+
+
+void deal_initial_hands(int num_players, int hand_size) {
+	// Distribuir cartas iniciais para cada jogador
+	PlayerNode* current_player = lista_jogadores;
+	for (int i = 0; i < num_players; i++) {
+		for (int j = 0; j < hand_size; j++) {
+			add_card(current_player->mao, baralho);
+		}
+		current_player = current_player->next;
+	}
+}
 
 PlayerNode* create_player(CardNode* playerHand) {
     PlayerNode* newPlayer = malloc(sizeof(PlayerNode));
@@ -65,8 +120,14 @@ void next_player() {
 
 #pragma endregion INICIANDO_JOGADORES
 
-
 //
+
+#pragma region MOCK
+
+
+
+#pragma endregion MOCKEND
+
 
 void game_loop() {
 	while (1) {
@@ -77,6 +138,18 @@ void game_loop() {
 		end_turn_checks();
 	}
 }
+
+
+void start_turn_checks() {
+	// printa a mão de quem vai jogar
+	// no formato [numero, cor] e.g. [0, amarelo]
+	PlayerNode* aux = jogador_da_vez;
+	while (aux->mao->card != NULL) {
+		TraceLog(LOG_INFO, "[", aux->mao->card->valor,",", aux->mao->card->cor, "]");
+		Card* remove_player_first(jogador_da_vez);
+	}
+}
+
 
 void end_turn_checks() {
 
@@ -98,19 +171,8 @@ void end_turn_checks() {
 		aux = aux->next;
 	} while (aux != lista_jogadores);
 	// flags setadas baseadas em valores, acima de 9 -> passa efeitos para o próximo.
-}
+}  
 
-
-void start_turn_checks() {
-	// printa a mão de quem vai jogar
-	// no formato [numero, cor] e.g. [0, amarelo]
-	PlayerNode* aux = jogador_da_vez;
-	while (aux->mao->card != NULL) {
-		TraceLog(LOG_INFO, "[", aux->mao->card->valor,",", aux->mao->card->cor, "]");
-		Card* remove_player_first(jogador_da_vez);
-	}
-
-}
 
 void definir_pilha() {
 	CardNode* novo = malloc(sizeof(CardNode));
@@ -121,18 +183,6 @@ void definir_pilha() {
 		novo = novo->next;
 	}
 }
-
-void iniciar_pilha() {
-	definir_pilha();
-}
-
-void iniciar_partida() {
-	iniciar_pilha(&pilha);
-}
-
-
-// Init
-
 
 
 
@@ -183,6 +233,15 @@ Card* remove_first(Pilha** pilha) {
 	CardNode* aux = *pilha;
 	Card* card = aux->card;
 	*pilha = aux->next;
+	free(aux);
+	return card;
+}
+
+Card* remove_player_first(PlayerNode** player) {
+	if (!player || !*player) return NULL;
+	CardNode* aux = *player;
+	Card* card = aux->card;
+	*player = aux->next;
 	free(aux);
 	return card;
 }
