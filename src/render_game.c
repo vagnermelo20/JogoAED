@@ -213,15 +213,6 @@ void desenharInfoJogo( Assets* assets) {
     // Direção
     const char* direcao = (game.direcao == ANTI_CLOCKWISE) ? "Sentido: >" : "Sentido: <";
     DrawText(direcao, 20, 95, 20, WHITE);
-
-    // Cartas para comprar
-    if (game.comprar_cartas > 0) {
-        char textoCompra[50];
-        sprintf(textoCompra, "COMPRE %d CARTAS!", game.comprar_cartas);
-        DrawRectangle(LARGURA_TELA / 2 - 150, 80, 300, 50, Fade(RED, 0.8f));
-        DrawText(textoCompra, LARGURA_TELA / 2 - 130, 95, 25, WHITE);
-    }
-
     // Outros jogadores
     int y = 150;
     if (game.jogador_da_vez != NULL) {
@@ -242,12 +233,8 @@ void desenharInfoJogo( Assets* assets) {
 
     // Instruções
     DrawText("Clique em uma carta para jogar", 20, ALTURA_TELA - 225, 18, WHITE);
-    DrawText("Clique no baralho para comprar ou presione espaço", 20, ALTURA_TELA - 200, 18, WHITE);
+    DrawText("Clique no baralho ou presione espaço para comprar", 20, ALTURA_TELA - 200, 18, WHITE);
 
-    // Jogador bloqueado
-    if (game.jogador_bloqueado) {
-        DrawText("BLOQUEADO! Aguarde...", LARGURA_TELA / 2 - 120, 150, 25, RED);
-    }
 }
 
 // Desenha a tela completa

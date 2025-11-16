@@ -132,7 +132,6 @@ int main() {
             char msg[100];
             sprintf(msg, "COMPRE %d CARTAS!", game.comprar_cartas);
             DrawText(msg, LARGURA_TELA / 2 - 150, ALTURA_TELA / 2 - 100, 30, WHITE);
-            DrawText("Clique no baralho!", LARGURA_TELA / 2 - 120, ALTURA_TELA / 2 - 70, 20, YELLOW);
         }
         
         if (game.jogador_da_vez == jogadorHumano && game.jogador_bloqueado) {
@@ -239,10 +238,6 @@ void processarTurnoJogador(CartaUI* cartasUI, int numCartasUI, Assets* assets, i
             }
         }
     }
-
-    // if (IsKeyPressed(KEY_SPACE)) {
-    //     next_player();
-    // }
 }
 
 void processarTurnoCPU() {
@@ -294,8 +289,6 @@ void processarTurnoCPU() {
                 puxar_baralho(&game.jogador_da_vez, &game.baralho);
             }
             if (cartaJogada->valor == TRES) {
-                printf("CPU jogou um 3! Jogando outra carta...\n");
-                // Chamar recursivamente para jogar outra
                 processarTurnoCPU();
             }
             if (cartaJogada->valor == QUATRO) {
