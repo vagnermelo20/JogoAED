@@ -9,7 +9,7 @@
 
 // Structs
 typedef struct PlayerNode {
-    char nome[20];
+    char numero;
     CartaNode* mao;
     struct PlayerNode *next;
     struct PlayerNode *prev;
@@ -33,7 +33,7 @@ typedef enum Direction {
 	Cor corAtual;
 	int comprar_cartas;
 	int jogoTerminado;
-	Player* vencedor;
+	PlayerNode* vencedor;
 } GameState;
 
  extern GameState game;
@@ -42,11 +42,12 @@ typedef enum Direction {
 // Fun��es do jogo
 void initialize_game(int num_players);
 void deal_initial_hands(int num_players, int hand_size);
-void aplicar_efeito_carta(PlayerNode jogador_da_vez, Carta* carta);
+void aplicar_efeito_carta(PlayerNode* jogador_da_vez, Carta* carta);
 
 // Init
 void initialize_baralho(Pilha* baralho, int num_cartas);
 void deal_initial_hands(int num_players, int hand_size);
+CartaNode* create_mao();
 PlayerNode* create_player(CartaNode* mao);
 void create_player_list(); // coloca todos os jogadores na lista
 
@@ -56,6 +57,7 @@ void game_loop();
 void next_player();
 void start_turn_checks(); 
 void end_turn_checks();
+void verificar_vitoria();
 
 
 // Player & Relacionados

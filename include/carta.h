@@ -31,3 +31,8 @@ typedef struct Carta {
 	Cor cor;
 	Valor valor;
 } Carta;
+
+
+//Init
+Carta* create_carta();
+Carta* create_random_carta();

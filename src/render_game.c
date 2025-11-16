@@ -10,7 +10,7 @@ Assets carregarAssets() {
     Assets assets;
 
     // Carregar cartas numéricas
-    const char* coresNomes[] = { "red", "yellow", "green", "blue" };
+    const char* coresNomes[] = {"yellow", "blue", "green", "red"};
 
     for (int cor = 0; cor < 4; cor++) {
         for (int num = 0; num < 10; num++) {
@@ -213,7 +213,7 @@ void desenharInfoJogo( Assets* assets) {
 
     // Jogador atual com destaque
     char textoJogador[100];
-    sprintf(textoJogador, "Turno: %s", game.jogador_da_vez);
+    sprintf(textoJogador, "Turno: p%d", game.jogador_da_vez->numero);
     DrawText(textoJogador, 20, 60, 25, BLACK);
 
     // Direção
@@ -237,9 +237,8 @@ void desenharInfoJogo( Assets* assets) {
         while (temp != NULL && temp != game.jogador_da_vez) {
             char info[100];
 
-            // 3. (BUG LÓGICO CORRIGIDO) Formatar a string 'info' com dados reais
-            int numCartas = count_mao(temp->mao); // Usando a função de card_node.c
-            sprintf(info, "%s: %d cartas", temp->nome, numCartas);
+            int numCartas = count_mao(temp->mao);
+            sprintf(info, "p%d: %d cartas", temp->numero, numCartas);
 
             DrawText(info, LARGURA_TELA - 200, y, 18, WHITE);
             y += 25;
@@ -269,7 +268,7 @@ void desenharTela(Assets* assets, CartaUI* cartasJogador, int numCartasJogador, 
     desenharInfoJogo(assets);
 
     // Pilha de jogo (centro)
-    desenharPilhaJogo(game.pilha, assets, game.corAtual);
+    desenharPilhaJogo(&game.pilha, assets, game.corAtual);
 
     // Baralho (ao lado da pilha)
     Vector2 posBaralho = { LARGURA_TELA / 2 + 60, ALTURA_TELA / 2 - ALTURA_CARTA / 2 };
@@ -285,7 +284,7 @@ void desenharTela(Assets* assets, CartaUI* cartasJogador, int numCartasJogador, 
         DrawRectangle(0, 0, LARGURA_TELA, ALTURA_TELA, Fade(BLACK, 0.7f));
 
         char mensagem[100];
-        sprintf(mensagem, "%s VENCEU!", game.vencedor->nome);
+        sprintf(mensagem, "p%d VENCEU!", game.vencedor->numero);
         int larguraTexto = MeasureText(mensagem, 50);
         DrawText(mensagem, LARGURA_TELA / 2 - larguraTexto / 2, ALTURA_TELA / 2 - 50, 50, GOLD);
 
@@ -299,9 +298,10 @@ void desenharTela(Assets* assets, CartaUI* cartasJogador, int numCartasJogador, 
 const char* obterNomeCor(Cor cor) {
     switch (cor) {
     case INCOLOR: return "Incolor";
-    case VERMELHO: return "Vermelho";
     case AMARELO: return "Amarelo";
+    case AZUL: return "Azul";
     case VERDE: return "Verde";
+    case VERMELHO: return "Vermelho";
     default: return "Desconhecida";
     }
 }
@@ -319,10 +319,10 @@ const char* obterNomeValor(Valor valor) {
     case SETE: return "7";
     case OITO: return "8";
     case NOVE: return "9";
-    case BLOQUEAR: return "Bloquear";
-    case BLOQUEAR_ANTERIOR: return "Bloquear anterior";
     case MAIS_2: return "+2";
     case MAIS_4: return "+4";
+    case BLOQUEAR: return "Bloquear";
+    case BLOQUEAR_ANTERIOR: return "Bloquear anterior";
     case REVERSO: return "Reverso";
     case DEFINIR_COR: return "Cor";
     default: return "?";

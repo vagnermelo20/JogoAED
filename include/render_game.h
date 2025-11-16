@@ -5,6 +5,7 @@
 
 #include "raylib.h"
 #include "game_manager.h"
+#include "carta.h"
 
 #define LARGURA_TELA 1280
 #define ALTURA_TELA 720

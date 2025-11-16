@@ -6,14 +6,14 @@
 
 // Generalized Functions
 int count(Pilha* pilha) {
-	TraceLog(LOG_INFO, "pop");
+	
 	int count = 0;
 	if (!pilha || pilha == NULL) return 0;
 	Pilha* aux = pilha;
-	while (aux->next != NULL) {
+	while (aux != NULL) {
 		aux = aux->next;
 		count++;
-	} 
+	}
 	return count;
 }
 
@@ -29,22 +29,40 @@ Carta* remover_topo(Pilha** pilha) {
 	return card;
 }
 
-void adicionar_carta(Pilha *baralho, Carta* carta) {
-	if (baralho || !carta) return;
+void adicionar_carta(Pilha** pilha, Carta carta) {
 	Pilha* novo = malloc(sizeof(Pilha));
-	novo->next = baralho;
-	novo->carta = carta;
-	
-	baralho = novo; 
+	if (novo == NULL) {
+		return;
+	}
+
+	novo->carta = malloc(sizeof(Carta));
+	if (novo->carta == NULL) {
+		free(novo);
+		return;
+	}
+
+	*(novo->carta) = carta;
+	novo->next = *pilha;
+	*pilha = novo;
 }
+
 
 
 void unload_all_pilha(Pilha** head) {
-
+	// Implementar a liberação de memória
+	Pilha* atual = *head;
+	Pilha* proximo;
+	while (atual != NULL) {
+		proximo = atual->next;
+		free(atual->carta); // Libera a carta
+		free(atual);        // Libera o nó da pilha
+		atual = proximo;
+	}
+	*head = NULL; // Define o ponteiro original como NULL
 }
 
 // Baralho
-void initialize_baralho(Pilha* baralho, int num_cartas) {
+void initialize_baralho(Pilha** baralho, int num_cartas) {
 	if (num_cartas == 0 || !baralho) {
 		return;
 	}
@@ -57,71 +75,86 @@ void initialize_baralho(Pilha* baralho, int num_cartas) {
 			if (carta) free(carta);
 			return;
 		}
-		carta->valor = GetRandomValue(0,9);
+		carta->valor = GetRandomValue(0, 9);
 		carta->cor = GetRandomValue(1, 4);
 
 		nova->carta = carta;
-		nova->next = baralho;
-		baralho = nova;
+		nova->next = *baralho;
+		*baralho = nova;
 	}
 }
 
 
 // Pilha 
 Carta* check_top(Pilha* pilha) {
-	if (pilha->carta == NULL) return NULL;
+	if (pilha == NULL || pilha->carta == NULL) return NULL;
 	return (pilha->carta);
 }
 
 
 
 // Baralho, Pilha
-void initialize_pilha(Pilha* pilha, Pilha* baralho) {
-	if (pilha != NULL || !baralho) {
+void initialize_pilha(Pilha** pilha, Pilha** baralho) {
+	if (baralho == NULL || *baralho == NULL) {
 		return;
 	}
-	pilha = (Pilha*)malloc(sizeof(Pilha));
-	Pilha* aux = baralho;
-	baralho = baralho->next;
-	pilha = aux;
-	pilha->next = NULL;
+
+	Pilha* topo = *baralho;
+	*baralho = (*baralho)->next;
+
+	topo->next = *pilha;
+	*pilha = topo;
 }
 
+	
 
 // Pilha, Baralho
-void refill(Pilha** pilha, Pilha** baralho) {
-	if (!(*pilha) || !pilha || !(*baralho) || !baralho) return;
-	*baralho = (*pilha)->next;
-	(*pilha)->next = NULL;
-	embaralhar(pilha, baralho);
+void refill(Pilha** pilha, Pilha** baralho) { // Ao verificar um baralho zerado, salva o topo da pilha e junta o resto ao baralho
+	if (!pilha || !(*pilha) || !baralho) return;
+	Pilha* topo = *pilha;
+	*pilha = (*pilha)->next;
+	topo->next = NULL;
+
+	*baralho = *pilha;
+
+	*pilha = topo;
+
+	if (*baralho != NULL) {
+		embaralhar(baralho, pilha);
+	}
 }
 
-void embaralhar(Pilha *pilha, Pilha* baralho) {
-	if (count(baralho) <= 1) return;
-
-	// Converter pilha para array
-	Carta* cartas = (Carta*)malloc(sizeof(Carta) * count(baralho));
-	int count = 0;
-
-	while (remover_topo(baralho) != NULL) {
-		refill(pilha, baralho);
+void embaralhar(Pilha** pilha, Pilha **baralho) {
+	int n = count(*pilha);
+	if (n <= 1) {
+		return;
 	}
 
-	// Embaralhar array
-	srand(time(NULL));
-	for (int i = count - 1; i > 0; i--) {
+	Carta** array_cartas = malloc(n * sizeof(Carta*));
+	if (array_cartas == NULL) {
+		return;
+	}
+
+	Pilha* temp = *pilha;
+	for (int i = 0; i < n; i++) {
+		array_cartas[i] = temp->carta;
+		temp = temp->next;
+	}
+
+	for (int i = n - 1; i > 0; i--) {
 		int j = rand() % (i + 1);
-		Carta temp = cartas[i];
-		cartas[i] = cartas[j];
-		cartas[j] = temp;
+		Carta* temp_carta = array_cartas[i];
+		array_cartas[i] = array_cartas[j];
+		array_cartas[j] = temp_carta;
 	}
 
-	// Reconstruir pilha
-	for (int i = 0; i < count; i++) {
-		adicionar_carta(baralho, &cartas[i]);
+	temp = *pilha;
+	for (int i = 0; i < n; i++) {
+		temp->carta = array_cartas[i];
+		temp = temp->next;
 	}
 
-	free(cartas);
+	free(array_cartas);
 }
  
 #pragma endregion 

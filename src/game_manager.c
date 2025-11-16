@@ -25,7 +25,7 @@ GameState game = {
 // Vars
 static Direction direcao = 0;
 static const num_players = 4;
-static const num_cartas = 28;
+static const num_cartas = 108;
 
 
 
@@ -47,17 +47,19 @@ static CartaNode* mao4 = NULL;
 void deal_initial_hands(int num_players, int hand_size) {
 	// Distribuir cartas iniciais para cada jogador
 	for (int i = 0; i < num_players; i++) {
+		game.jogador_da_vez->numero = i;
 		for (int j = 0; j < hand_size; j++) {
-			puxar_baralho(game.jogador_da_vez, game.baralho);
+			puxar_baralho(&game.jogador_da_vez, &game.baralho);
 		}
 		game.jogador_da_vez = game.jogador_da_vez->next;
 	}
 }
 
 
+
 PlayerNode* create_player(CartaNode* mao) {
     PlayerNode* newPlayer = malloc(sizeof(PlayerNode));
-    newPlayer->mao = mao;
+    newPlayer->mao = mao = create_mao();
     newPlayer->next = NULL;
     newPlayer->prev = NULL;
     
@@ -125,37 +127,33 @@ void criar_baralho(Pilha* baralho) {
 
 
 // Inicializa o estado do jogo
-void inicializarJogo(int numJogadores) {
-
-
-	criar_baralho(game.baralho);
-	embaralhar(game.pilha, game.baralho);
-
-	// Primeira carta na pilha
-	Carta* primeiraCarta = remover_topo(&(game.baralho));
-	while (primeiraCarta != NULL && primeiraCarta->valor >= MAIS_2) {
-		// Não começar com cartas especiais
-		initialize_pilha(game.pilha, game.baralho);
-		embaralhar(game.pilha, game.baralho);
-		primeiraCarta = remover_topo(game.baralho);
-	}
-
-	if (primeiraCarta != NULL) {
-		jogada(game.pilha, primeiraCarta);
-		game.corAtual = primeiraCarta->cor;
-		free(primeiraCarta);
-	}
-
-}
-
 
 void initialize_game(int num_players) {
-	initialize_baralho(game.baralho, num_cartas);
 	create_player_list();
-	embaralhar(game.pilha, game.baralho);
+    // criar_baralho(game.baralho); talvez implementar
+	initialize_baralho(&game.baralho, num_cartas);
+	embaralhar(&game.baralho, &game.pilha);
 	deal_initial_hands(num_players, 7);
-	initialize_pilha(game.pilha, game.baralho);
+	initialize_pilha(&game.pilha, &game.baralho);
+	Carta* primeiraCarta = remover_topo(&game.baralho);
+	while (primeiraCarta != NULL && primeiraCarta->valor >= MAIS_2) {
+		// Não começar com cartas especiais (embaralhar de novo)
+		// initialize_pilha(&game.pilha, &game.baralho);
+		// embaralhar(&game.pilha, &game.baralho);
+		primeiraCarta = remover_topo(&game.baralho);
+	}
+	if (primeiraCarta != NULL) {
+		Pilha* novo_pilha = malloc(sizeof(Pilha));
+		if (novo_pilha) {
+			novo_pilha->carta = primeiraCarta;
+			novo_pilha->next = game.pilha;
+			game.pilha = novo_pilha;
+		}
+
+		game.corAtual = primeiraCarta->cor;
+	}
 	// start_game();
+	return;
 }
 
 
@@ -173,50 +171,27 @@ void next_player() {
 #pragma endregion INICIANDO_JOGADORES
 
 
-// Turnos
-#pragma region TURNOS 
-void game_loop() {
-	while (1) {
-		if (IsKeyPressed(KEY_ENTER)) {
-			start_turn_checks();
-		}
-		next_player();
-		end_turn_checks();
+void verificar_vitoria() {
+
+	if (game.lista_jogadores == NULL || game.jogador_da_vez == NULL || game.baralho == NULL || game.jogador_da_vez->mao == NULL) {
+		return;
 	}
-}
 
+	PlayerNode* temp = game.lista_jogadores;
 
-void start_turn_checks() {
-	// printa a m�o de quem vai jogar
-	// no formato [numero, cor] e.g. [0, amarelo]
-	PlayerNode* aux = game.jogador_da_vez;
-	while (aux->mao->carta != NULL) {
-		TraceLog(LOG_INFO, "[", aux->mao->carta->valor,",", aux->mao->carta->cor, "]");
-		Carta* remove_player_first(jogador_da_vez);
-	}
-}
-
-
-void end_turn_checks() {
-
-
-	//Debbuging 
-	TraceLog(LOG_INFO, "TESTE");
-
-	// checar se a m�o do cara que jogou est� vazia.
-	// Se estiver, encerra o jogo. D� um return, exit, printf cabou ou qualquer coisa.
-	if (game.jogador_da_vez->mao->carta == 0) {
-		TraceLog(LOG_INFO, "jogador ganhou -> ", game.jogador_da_vez);
-	}
-	// printe a m�o de todos os jogadores.
-	PlayerNode* aux = game.lista_jogadores;
 	do {
-		while (aux->mao->carta != NULL) {
-			TraceLog(LOG_INFO, "|", game.lista_jogadores->mao->carta, "|");
+		// Usar count_mao (de card_node.c)
+		if (count_mao(temp->mao) == 0) {
+			game.jogoTerminado = 1;
+			game.vencedor = temp; // Atribui o ponteiro PlayerNode*
+			TraceLog(LOG_INFO, "JOGO TERMINADO! Vencedor: p%d", game.vencedor->numero);
+			return;
 		}
-		aux = aux->next;
-	} while (aux != game.lista_jogadores);
-	// flags setadas baseadas em valores, acima de 9 -> passa efeitos para o pr�ximo.
+
+		temp = temp->next;
+		if (temp == NULL) break;
+
+	} while (temp != game.lista_jogadores);
 }
 
 #pragma endregion TURNOS 
@@ -237,20 +212,42 @@ void desenhar_partida() {}
 // CartaNode, Baralho
 #pragma region PlayerNodeBaralho
 
-void puxar_baralho(PlayerNode** jogador_da_vez, Pilha** baralho) { // Jogador puxa uma carta do baralho
-	if (!*jogador_da_vez || !jogador_da_vez || !*baralho || !baralho || !((*baralho)->carta)) return;
-	if (count(baralho) == 0) {
-		refill(game.pilha, *baralho);
+void puxar_baralho(PlayerNode** jogador_da_vez, Pilha** baralho) {
+	if (!jogador_da_vez || !*jogador_da_vez || !baralho || !*baralho) {
+		TraceLog(LOG_WARNING, "Puxar baralho falhou: jogador ou baralho nulo.");
+		return;
 	}
 
-	Pilha* aux = *baralho;
-	CartaNode* novo = malloc(sizeof(CartaNode));
-	novo->next = (*jogador_da_vez)->mao;
-	novo->carta = (*baralho)->carta;
-	(*jogador_da_vez)->mao = novo;
+	// if (count(baralho) == 0) { // 'count' é de pilha.c
+	// 	refill(game.pilha, *baralho);
+	// }
+
+	// Verificar se o baralho (pilha) está vazio
+	if (*baralho == NULL) {
+		TraceLog(LOG_INFO, "Baralho vazio, recarregando...");
+		// refill(&game.pilha, baralho); // 'refill' é de pilha.c
+		if (*baralho == NULL) {
+			TraceLog(LOG_ERROR, "Não há cartas para comprar!");
+			return;
+		}
+	}
+
+	Pilha* noDoBaralho = *baralho; // O nó do topo do baralho
+
+	// Criar novo nó para a mão
+	CartaNode* nova_mao = create_mao();
+	if (!nova_mao) return; // Falha de alocação
+	
+	nova_mao->carta = noDoBaralho->carta;
+
+	nova_mao->carta = noDoBaralho->carta; // A mão aponta para a *mesma* carta
+	nova_mao->next = (*jogador_da_vez)->mao; // Adiciona ao início da mão
+	(*jogador_da_vez)->mao = nova_mao;
+
+	// Avançar o baralho
 	*baralho = (*baralho)->next;
 
-	free(aux);
+	free(noDoBaralho); // Libera o *nó* da pilha (baralho)
 	return;
 }
 
@@ -304,20 +301,71 @@ void jogada(PlayerNode* player, Carta* carta) {
 }
 
 Carta* jogar_pilha(PlayerNode* player, int carta_selecionada) {
-	if (!player || !carta_selecionada || count(player->mao) < carta_selecionada) return (Carta*) { 0 };
-	Pilha* nova = malloc(sizeof(Pilha));
-	CartaNode* aux = player->mao;
-	for (int i = 0; i < carta_selecionada - 1; i++) {
-		aux = aux->next;
+	// A UI passa um índice 1-based (começando em 1)
+	int indice_base_0 = carta_selecionada - 1;
+
+	// --- Validação ---
+	if (!player || player->mao == NULL) {
+		TraceLog(LOG_WARNING, "jogar_pilha: Jogador nulo ou mão vazia.");
+		return NULL;
 	}
-	CartaNode* temp = aux->next;
-	nova->carta = temp->carta;
-	nova->next = game.pilha;
-	game.pilha = nova;
-	free(temp);
-	aux->next = aux->next->next;
-	free(aux);
-	return nova->carta;
+
+	if (indice_base_0 < 0 || indice_base_0 >= count_mao(player->mao)) {
+		TraceLog(LOG_ERROR, "jogar_pilha: Indice invalido %d (total de cartas: %d)", indice_base_0, count_mao(player->mao));
+		return NULL;
+	}
+
+	// --- Lógica de Remoção ---
+	CartaNode* no_para_remover = NULL;
+	Carta* carta_jogada = NULL;
+
+	// Caso 1: Removendo o primeiro nó (a cabeça da lista)
+	if (indice_base_0 == 0) {
+		no_para_remover = player->mao;      // Salva o nó da cabeça
+		player->mao = no_para_remover->next; // Avança a cabeça da lista
+	} 
+	// Caso 2: Removendo do meio ou do fim
+	else {
+		// Encontra o nó ANTERIOR ao que queremos remover
+		CartaNode* anterior = player->mao;
+		for (int i = 0; i < indice_base_0 - 1; i++) {
+			if (anterior->next == NULL) {
+				// Isso não deve acontecer por causa da checagem de 'total_cartas'
+				TraceLog(LOG_ERROR, "jogar_pilha: Atingiu fim da lista inesperadamente.");
+				return NULL;
+			}
+			anterior = anterior->next;
+		}
+
+		no_para_remover = anterior->next;       // Este é o nó para remover
+		anterior->next = no_para_remover->next; // "Pula" o nó a ser removido
+	}
+
+	// --- Adicionar à Pilha de Descarte ---
+	if (no_para_remover == NULL) {
+		TraceLog(LOG_ERROR, "jogar_pilha: no_para_remover é NULL, lógica falhou.");
+		return NULL;
+	}
+
+	Pilha* nova_pilha_item = malloc(sizeof(Pilha));
+	if (nova_pilha_item == NULL) {
+		TraceLog(LOG_ERROR, "jogar_pilha: Falha ao alocar memória para item da pilha.");
+		// A carta foi removida da mão, mas não foi para a pilha (vazamento de memória)
+		// Isso é ruim, mas pelo menos não vai crashar.
+		free(no_para_remover); // Libera o nó
+		return NULL;
+	}
+
+	carta_jogada = no_para_remover->carta; // Pega a carta
+	nova_pilha_item->carta = carta_jogada; // Coloca a carta no novo nó da pilha
+	nova_pilha_item->next = game.pilha;
+	game.pilha = nova_pilha_item;
+
+	// Finalmente, libera o NÓ da mão que foi removido
+	// (NÃO libera a carta, pois ela está na pilha agora)
+	free(no_para_remover);
+
+	return carta_jogada; // Retorna a carta que foi jogada
 }
 
 #pragma endregion CartaNodePilha
@@ -337,38 +385,29 @@ Carta* jogar_pilha(PlayerNode* player, int carta_selecionada) {
 #pragma endregion PilhaBaralho
 
 
-Carta* remove_player_first(PlayerNode** player) { // Mock Function
-	if (!player || !*player) return NULL;
-	CartaNode* aux = (*player)->mao;
-	Carta* card = aux->carta;
-	(*player)->mao = aux->next;
-	free(aux);
-	return card;
-}
-
-
 
 // Aplica efeitos especiais das cartas
-void aplicar_efeito_carta(PlayerNode player, Carta* carta) {
+void aplicar_efeito_carta(PlayerNode* player, Carta* carta) {
 	switch (carta->valor) {
 		case MAIS_2:
 			// +2 s� aplica efeito se N�O for INCOLOR (cartas coridas)
 			if (carta->cor != INCOLOR) {
-				comprar_cartas += 2;
+				game.comprar_cartas += 2;
 			}
 			break;
 
 		case MAIS_4:
 			// +4 sempre aplica efeito (s� existe em INCOLORs)
 				comprar_cartas += 4;
+				// chamar tela +4
 			break;
 
 		case REVERSO:
-			direcao = !direcao;
+			game.direcao = !game.direcao;
 			break;
 
 		case BLOQUEAR:
-			jogador_bloqueado = 1;
+			game.jogador_bloqueado = 1;
 			break;
 
 		default:
