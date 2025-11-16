@@ -49,39 +49,78 @@ void adicionar_carta(Pilha** pilha, Carta carta) {
 
 
 void unload_all_pilha(Pilha** head) {
-	// Implementar a liberação de memória
+	// Implementar a liberaï¿½ï¿½o de memï¿½ria
 	Pilha* atual = *head;
 	Pilha* proximo;
 	while (atual != NULL) {
 		proximo = atual->next;
 		free(atual->carta); // Libera a carta
-		free(atual);        // Libera o nó da pilha
+		free(atual);        // Libera o nï¿½ da pilha
 		atual = proximo;
 	}
 	*head = NULL; // Define o ponteiro original como NULL
 }
 
 // Baralho
+void add_carta_baralho(Pilha **head, Carta* carta) {
+    if (carta != NULL) {
+        Pilha *nova = (Pilha*)malloc(sizeof(Pilha));
+        
+        if (nova != NULL) {
+            nova->carta = carta;
+            nova->next = *head;
+            *head = nova;
+        }
+    }
+}
+
+// FunÃ§Ã£o auxiliar para criar e adicionar cartas
+void create_and_add_cards(Cor cor, Valor valor, Pilha **head) {
+    Carta* nova = (Carta*)malloc(sizeof(Carta));
+    if (nova != NULL) {
+        nova->cor = cor;
+        nova->valor = valor;
+        
+        add_carta_baralho(head, nova);
+    }
+}
+
+// Baralho - Cria um baralho completo de UNO
 void initialize_baralho(Pilha** baralho, int num_cartas) {
-	if (num_cartas == 0 || !baralho) {
-		return;
-	}
-	for (int i = 0; i < num_cartas; i++) {
-		Pilha* nova = (Pilha*)malloc(sizeof(Pilha));
-		Carta* carta = (Carta*)malloc(sizeof(Carta));
-
-		if (nova == NULL || carta == NULL) {
-			if (nova) free(nova);
-			if (carta) free(carta);
-			return;
-		}
-		carta->valor = GetRandomValue(0, 9);
-		carta->cor = GetRandomValue(1, 4);
-
-		nova->carta = carta;
-		nova->next = *baralho;
-		*baralho = nova;
-	}
+    if (!baralho) {
+        return;
+    }
+    
+    Cor cores[] = {AMARELO, AZUL, VERDE, VERMELHO};
+    
+    // Para cada cor
+    for (int c = 0; c < 4; c++) {
+        // Adiciona um "0" de cada cor
+        create_and_add_cards(cores[c], ZERO, baralho);
+        
+        // Adiciona duas cÃ³pias do resto (1-9, +2, Bloquear, Reverso)
+        for (int i = 0; i < 2; i++) {
+            create_and_add_cards(cores[c], UM, baralho);
+            create_and_add_cards(cores[c], DOIS, baralho);
+            create_and_add_cards(cores[c], TRES, baralho);
+            create_and_add_cards(cores[c], QUATRO, baralho);
+            create_and_add_cards(cores[c], CINCO, baralho);
+            create_and_add_cards(cores[c], SEIS, baralho);
+            create_and_add_cards(cores[c], SETE, baralho);
+            create_and_add_cards(cores[c], OITO, baralho);
+            create_and_add_cards(cores[c], NOVE, baralho);
+            
+            create_and_add_cards(cores[c], MAIS_2, baralho);
+            create_and_add_cards(cores[c], BLOQUEAR, baralho);
+            create_and_add_cards(cores[c], REVERSO, baralho);
+        }
+    }
+    
+    // Adiciona 4 cartas MAIS_4 e 4 DEFINIR_COR
+    for (int i = 0; i < 4; i++) {
+        create_and_add_cards(INCOLOR, DEFINIR_COR, baralho);
+        create_and_add_cards(INCOLOR, MAIS_4, baralho);
+    }
 }
 
 

@@ -23,7 +23,6 @@ GameState game = {
 };
 
 // Vars
-static Direction direcao = 0;
 static const num_players = 4;
 static const num_cartas = 108;
 
@@ -161,7 +160,7 @@ void initialize_game(int num_players) {
 
 
 void next_player() {
-	if (direcao == 0) {
+	if (game.direcao == 0) {
 		game.jogador_da_vez = game.jogador_da_vez->next;
 	} else {
 		game.jogador_da_vez = game.jogador_da_vez->prev;
@@ -272,11 +271,39 @@ void puxar_4_cartas(PlayerNode** jogador_da_vez, Pilha** baralho) {
 #pragma region CartaNodePilha
 
 // Aqui se valida a carta sendo jogada com a carta no topo da pilha, retornando 1 caso seja validada e 0 caso n�o
+// ...existing code...
+
 int validar_jogada(Carta* carta, Pilha* pilha) {
-	if (!(pilha) || !carta) return 0;
-	if (check_top(pilha)->cor == carta->cor || check_top(pilha)->valor == carta->valor) return 1;
-	return 0;
+    if (carta == NULL || pilha == NULL || pilha->carta == NULL) {
+        return 0;
+    }
+
+    Carta* topoPilha = pilha->carta;
+
+    // Cartas INCOLOR podem ser jogadas a qualquer momento
+    if (carta->cor == INCOLOR) {
+        return 1;
+    }
+
+    // Verificar se a cor combina
+    if (carta->cor == topoPilha->cor) {
+        return 1;
+    }
+
+    // Verificar se a cor combina com a cor escolhida (para cartas INCOLOR na pilha)
+    if (topoPilha->cor == INCOLOR && carta->cor == game.corAtual) {
+        return 1;
+    }
+
+    // Verificar se o valor combina
+    if (carta->valor == topoPilha->valor) {
+        return 1;
+    }
+
+    return 0;
 }
+
+// ...existing code...
 
 void jogada(PlayerNode* player, Carta* carta) {
 	if (!player || !carta) return;
@@ -398,7 +425,7 @@ void aplicar_efeito_carta(PlayerNode* player, Carta* carta) {
 
 		case MAIS_4:
 			// +4 sempre aplica efeito (s� existe em INCOLORs)
-				comprar_cartas += 4;
+				game.comprar_cartas += 4;
 				// chamar tela +4
 			break;
 

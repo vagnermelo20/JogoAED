@@ -9,10 +9,10 @@
 Assets carregarAssets() {
     Assets assets;
 
-    // Carregar cartas numÈricas
-    const char* coresNomes[] = {"yellow", "blue", "green", "red"};
+    // Carregar cartas num√©ricas - AJUSTADO PARA 4 CORES
+    const char* coresNomes[] = {"yellow", "blue", "green", "red"}; // √çndices 0-3
 
-    for (int cor = 0; cor < 4; cor++) {
+    for (int cor = 0; cor < 4; cor++) { // APENAS AS 4 CORES NORMAIS
         for (int num = 0; num < 10; num++) {
             char caminho[100];
             sprintf(caminho, "assets/%s_%d.png", coresNomes[cor], num);
@@ -27,7 +27,7 @@ Assets carregarAssets() {
     // Carregar cartas especiais coloridas
     const char* especiaisNomes[] = { "draw_two", "reverse", "skip" };
 
-    for (int cor = 0; cor < 4; cor++) {
+    for (int cor = 0; cor < 4; cor++) { // APENAS AS 4 CORES NORMAIS
         for (int tipo = 0; tipo < 3; tipo++) {
             char caminho[100];
             sprintf(caminho, "assets/%s_%s.png", coresNomes[cor], especiaisNomes[tipo]);
@@ -39,7 +39,7 @@ Assets carregarAssets() {
         }
     }
 
-    // Carregar INCOLOR
+    // Carregar INCOLOR (√çNDICE 4 - separado)
     Image imgWild = LoadImage("assets/wild.png");
     ImageResize(&imgWild, LARGURA_CARTA, ALTURA_CARTA);
     assets.cartasIncolor = LoadTextureFromImage(imgWild);
@@ -96,7 +96,7 @@ void desenharCarta(Carta* carta, Vector2 posicao, Assets* assets, int mostrarFre
         }
     }
     else if (carta->valor <= NOVE) {
-        // Carta numÈrica
+        // Carta num√©rica
         DrawTextureV(assets->cartasNumericas[carta->cor][carta->valor], posicao, WHITE);
     }
     else {
@@ -118,25 +118,25 @@ void desenharCarta(Carta* carta, Vector2 posicao, Assets* assets, int mostrarFre
         }
     }
 
-    // Desenhar borda se necess·rio
+    // Desenhar borda se necess√°rio
     DrawRectangleLinesEx((Rectangle) { posicao.x, posicao.y, LARGURA_CARTA, ALTURA_CARTA }, 2, DARKGRAY);
 }
 
-// Desenha a m„o do jogador
+// Desenha a mao do jogador
 void desenharMaoJogador(CartaNode* mao, Assets* assets, CartaUI* cartasUI, int* numCartas) {
     *numCartas = 0;
-    if (mao == NULL) return; // ProteÁ„o se a m„o estiver vazia
+    if (mao == NULL) return; // Prote√ß√£o se a m√£o estiver vazia
 
-    // Assumindo que 'count_mao' È a funÁ„o correta
+    // Assumindo que 'count_mao' √© a fun√ß√£o correta
     float espacamento = 15;
     float totalLargura = count_mao(mao) * (LARGURA_CARTA + espacamento);
     float startX = (LARGURA_TELA - totalLargura) / 2;
     float startY = ALTURA_TELA - ALTURA_CARTA - 20;
 
     int i = 0;
-    CartaNode* noAtual = mao; // Iterar com o nÛ
-    while (noAtual != NULL && i < 20) {  // Limite de 20 cartas visÌveis
-        Carta* carta = noAtual->carta; // Pegar a carta do nÛ
+    CartaNode* noAtual = mao; // Iterar com o n√≥
+    while (noAtual != NULL && i < 20) {  // Limite de 20 cartas vis√≠veis
+        Carta* carta = noAtual->carta; // Pegar a carta do n√≥
         Vector2 pos = { startX + i * (LARGURA_CARTA + espacamento), startY };
 
         if (cartasUI != NULL) {
@@ -158,21 +158,15 @@ void desenharMaoJogador(CartaNode* mao, Assets* assets, CartaUI* cartasUI, int* 
 void desenharPilhaJogo(Pilha** pile, Assets* assets, Cor corAtual) {
     Vector2 pos = { LARGURA_TELA / 2 - LARGURA_CARTA - 60, ALTURA_TELA / 2 - ALTURA_CARTA / 2 };
 
-    // ProteÁ„o contra ponteiro nulo e pilha vazia
+    // Prote√ß√£o contra ponteiro nulo e pilha vazia
     if (pile == NULL || *pile == NULL || (*pile)->carta == NULL) {
         DrawRectangle(pos.x, pos.y, LARGURA_CARTA, ALTURA_CARTA, LIGHTGRAY);
         DrawText("Pilha\nVazia", pos.x + 15, pos.y + 50, 20, DARKGRAY);
         return;
     }
 
-    Carta cartaModificada = *((*pile)->carta); // Fazer uma cÛpia para n„o modificar o estado
 
-    // Se for INCOLOR, usar a cor atual
-    if (cartaModificada.cor == INCOLOR && cartaModificada.valor != MAIS_4) {
-        cartaModificada.cor = corAtual;
-    }
-
-    desenharCarta(&cartaModificada, pos, assets, 1);
+    desenharCarta((*pile)->carta, pos, assets, 1);
 
 
     // Desenhar indicador de cor atual se for INCOLOR
@@ -194,7 +188,7 @@ void desenharPilhaJogo(Pilha** pile, Assets* assets, Cor corAtual) {
 
 // Desenha o baralho
 void desenharBaralho(Pilha* deck, Assets* assets, Vector2 posicao) {
-    // Desenhar v·rias cartas sobrepostas para efeito de pilha
+    // Desenhar v√°rias cartas sobrepostas para efeito de pilha
     for (int i = 0; i < 3; i++) {
         Vector2 offset = { posicao.x + i * 2, posicao.y - i * 2 };
         DrawTextureV(assets->cartaVerso, offset, WHITE);
@@ -206,9 +200,9 @@ void desenharBaralho(Pilha* deck, Assets* assets, Vector2 posicao) {
     DrawText(texto, posicao.x + 35, posicao.y + ALTURA_CARTA + 5, 20, BLACK);
 }
 
-// Desenha informaÁıes do jogo
+// Desenha informa√ß√µes do jogo
 void desenharInfoJogo( Assets* assets) {
-    // TÌtulo
+    // T√≠tulo
     DrawText("UNO - Jogo", 20, 20, 30, DARKBLUE);
 
     // Jogador atual com destaque
@@ -216,7 +210,7 @@ void desenharInfoJogo( Assets* assets) {
     sprintf(textoJogador, "Turno: p%d", game.jogador_da_vez->numero);
     DrawText(textoJogador, 20, 60, 25, BLACK);
 
-    // DireÁ„o
+    // Dire√ß√£o
     const char* direcao = (game.direcao == ANTI_CLOCKWISE) ? "Sentido: >" : "Sentido: <";
     DrawText(direcao, 20, 95, 20, WHITE);
 
@@ -246,7 +240,7 @@ void desenharInfoJogo( Assets* assets) {
         }
     }
 
-    // InstruÁıes
+    // Instru√ß√µes
     DrawText("Clique em uma carta para jogar", 20, ALTURA_TELA - 200, 18, WHITE);
     DrawText("Clique no baralho para comprar", 20, ALTURA_TELA - 175, 18, WHITE);
     DrawText("Pressione ESPACO para passar a vez", 20, ALTURA_TELA - 150, 18, WHITE);
@@ -264,7 +258,7 @@ void desenharTela(Assets* assets, CartaUI* cartasJogador, int numCartasJogador, 
     // Desenhar background
     DrawTexture(background, 0, 0, WHITE);
 
-    // InformaÁıes do jogo
+    // Informa√ß√µes do jogo
     desenharInfoJogo(assets);
 
     // Pilha de jogo (centro)
@@ -275,11 +269,11 @@ void desenharTela(Assets* assets, CartaUI* cartasJogador, int numCartasJogador, 
     desenharBaralho(game.baralho, assets, posBaralho);
     DrawText("Comprar", posBaralho.x + 10, posBaralho.y - 25, 18, BLACK);
 
-    // M„o do jogador HUMANO (sempre mostra suas cartas)
+    // M√£o do jogador HUMANO (sempre mostra suas cartas)
     int numCartas;
     desenharMaoJogador(jogadorHumano, assets, cartasJogador, &numCartas);
 
-    // Mensagem de vitÛria
+    // Mensagem de vit√≥ria
     if (game.jogoTerminado && game.vencedor != NULL) {
         DrawRectangle(0, 0, LARGURA_TELA, ALTURA_TELA, Fade(BLACK, 0.7f));
 
@@ -294,7 +288,7 @@ void desenharTela(Assets* assets, CartaUI* cartasJogador, int numCartasJogador, 
     EndDrawing();
 }
 
-// ObtÈm nome da cor
+// Obt√©m nome da cor
 const char* obterNomeCor(Cor cor) {
     switch (cor) {
     case INCOLOR: return "Incolor";
@@ -306,7 +300,7 @@ const char* obterNomeCor(Cor cor) {
     }
 }
 
-// ObtÈm nome do valor
+// Obt√©m nome do valor
 const char* obterNomeValor(Valor valor) {
     switch (valor) {
     case ZERO: return "0";
@@ -321,10 +315,9 @@ const char* obterNomeValor(Valor valor) {
     case NOVE: return "9";
     case MAIS_2: return "+2";
     case MAIS_4: return "+4";
-    case BLOQUEAR: return "Bloquear";
-    case BLOQUEAR_ANTERIOR: return "Bloquear anterior";
-    case REVERSO: return "Reverso";
     case DEFINIR_COR: return "Cor";
+    case BLOQUEAR: return "Bloquear";
+    case REVERSO: return "Reverso";
     default: return "?";
     }
 }
