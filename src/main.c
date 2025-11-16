@@ -215,10 +215,24 @@ void processarTurnoJogador(CartaUI* cartasUI, int numCartasUI, Assets* assets, i
                             *cartaPendenteEfeito = cartaJogada;
                             return;
                         }
-                        
-                        // ✅ MUDANÇA: Aplicar efeito ANTES de passar o turno
-                        aplicar_efeito_carta(game.jogador_da_vez, cartaJogada);
-                        next_player();
+                    aplicar_efeito_carta(game.jogador_da_vez, cartaJogada);   
+
+                    if (cartaJogada->valor == DOIS) {
+                        game.comprar_cartas += 2;
+                        return;
+
+                    }
+                    if (cartaJogada->valor == TRES) {
+                        processarTurnoCPU(); // 3 joga outra carta aletória
+                    }
+                    if (cartaJogada->valor == QUATRO){
+                        CartaNode* maoTemp = game.jogador_da_vez->mao;
+                        game.jogador_da_vez->mao = game.jogador_da_vez->prev->mao;
+						game.jogador_da_vez->prev->mao = maoTemp; // 4 troca a mão com o jogador anterior
+
+                    }
+                    next_player();
+                    return;
                     }
                 }
                 break;
@@ -272,9 +286,24 @@ void processarTurnoCPU() {
             if (cartaJogada->cor == INCOLOR) {
                 game.corAtual = (Cor)GetRandomValue(0, 3);
             }
-            
-            // ✅ MUDANÇA: Aplicar efeito ANTES de passar o turno
+
             aplicar_efeito_carta(game.jogador_da_vez, cartaJogada);
+
+            if (cartaJogada->valor == DOIS) {
+                puxar_baralho(&game.jogador_da_vez, &game.baralho);
+                puxar_baralho(&game.jogador_da_vez, &game.baralho);
+            }
+            if (cartaJogada->valor == TRES) {
+                printf("CPU jogou um 3! Jogando outra carta...\n");
+                // Chamar recursivamente para jogar outra
+                processarTurnoCPU();
+            }
+            if (cartaJogada->valor == QUATRO) {
+                CartaNode* maoTemp = game.jogador_da_vez->mao;
+                game.jogador_da_vez->mao = game.jogador_da_vez->prev->mao;
+                game.jogador_da_vez->prev->mao = maoTemp;
+
+            }
             next_player();
             return;
         }
