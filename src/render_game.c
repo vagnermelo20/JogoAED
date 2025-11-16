@@ -241,8 +241,8 @@ void desenharInfoJogo( Assets* assets) {
     }
 
     // Instruções
-    DrawText("Clique em uma carta para jogar", 20, ALTURA_TELA - 200, 18, WHITE);
-    DrawText("Clique no baralho para comprar", 20, ALTURA_TELA - 175, 18, WHITE);
+    DrawText("Clique em uma carta para jogar", 20, ALTURA_TELA - 225, 18, WHITE);
+    DrawText("Clique no baralho para comprar ou presione espaço", 20, ALTURA_TELA - 200, 18, WHITE);
 
     // Jogador bloqueado
     if (game.jogador_bloqueado) {

@@ -169,7 +169,7 @@ void processarTurnoJogador(CartaUI* cartasUI, int numCartasUI, Assets* assets, i
         Rectangle baralhoRect = { LARGURA_TELA / 2 + 60, ALTURA_TELA / 2 - ALTURA_CARTA / 2,
                                  LARGURA_CARTA, ALTURA_CARTA };
 
-        if (CheckCollisionPointRec(mousePos, baralhoRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        if (IsKeyPressed(KEY_SPACE) ||CheckCollisionPointRec(mousePos, baralhoRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             for (int i = 0; i < game.comprar_cartas; i++) {
                 puxar_baralho(&game.jogador_da_vez, &game.baralho);
             }
@@ -195,7 +195,7 @@ void processarTurnoJogador(CartaUI* cartasUI, int numCartasUI, Assets* assets, i
     Rectangle baralhoRect = { LARGURA_TELA / 2 + 60, ALTURA_TELA / 2 - ALTURA_CARTA / 2,
                              LARGURA_CARTA, ALTURA_CARTA };
 
-    if (CheckCollisionPointRec(mousePos, baralhoRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+    if (IsKeyPressed(KEY_SPACE) ||CheckCollisionPointRec(mousePos, baralhoRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         puxar_baralho(&game.jogador_da_vez, &game.baralho);
         next_player();
         return;
