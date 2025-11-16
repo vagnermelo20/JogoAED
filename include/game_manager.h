@@ -47,7 +47,7 @@ void aplicar_efeito_carta(PlayerNode* jogador_da_vez, Carta* carta);
 // Init
 void initialize_baralho(Pilha* baralho, int num_cartas);
 void deal_initial_hands(int num_players, int hand_size);
-CartaNode* create_mao();
+CartaNode* criar_mao();
 PlayerNode* create_player(CartaNode* mao);
 void create_player_list(); // coloca todos os jogadores na lista
 

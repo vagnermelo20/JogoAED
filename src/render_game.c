@@ -127,9 +127,9 @@ void desenharMaoJogador(CartaNode* mao, Assets* assets, CartaUI* cartasUI, int* 
     *numCartas = 0;
     if (mao == NULL) return; // Proteção se a mão estiver vazia
 
-    // Assumindo que 'count_mao' é a função correta
+    // Assumindo que 'contar_mao' é a função correta
     float espacamento = 15;
-    float totalLargura = count_mao(mao) * (LARGURA_CARTA + espacamento);
+    float totalLargura = contar_mao(mao) * (LARGURA_CARTA + espacamento);
     float startX = (LARGURA_TELA - totalLargura) / 2;
     float startY = ALTURA_TELA - ALTURA_CARTA - 20;
 
@@ -222,7 +222,7 @@ void desenharInfoJogo( Assets* assets) {
         while (temp != NULL && temp != game.jogador_da_vez) {
             char info[100];
 
-            int numCartas = count_mao(temp->mao);
+            int numCartas = contar_mao(temp->mao);
             sprintf(info, "p%d: %d cartas", temp->numero, numCartas);
 
             DrawText(info, LARGURA_TELA - 200, y, 18, WHITE);

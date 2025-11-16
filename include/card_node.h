@@ -8,7 +8,7 @@ typedef struct CartaNode {
 } CartaNode; // Lista de cartas, representa a mao de jogador
 
 
-int count_mao(CartaNode* mao); //Contagem de cartas
-CartaNode* create_mao();
+int contar_mao(CartaNode* mao); //Contagem de cartas
+CartaNode* criar_mao();
 void ordenar_mao(CartaNode** mao); 
 int comparar_cartas(Carta* carta1, Carta* carta2);

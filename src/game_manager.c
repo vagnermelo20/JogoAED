@@ -62,7 +62,7 @@ void deal_initial_hands(int num_players, int hand_size) {
 
 PlayerNode* create_player(CartaNode* mao) {
     PlayerNode* newPlayer = malloc(sizeof(PlayerNode));
-    newPlayer->mao = mao = create_mao();
+    newPlayer->mao = mao = criar_mao();
     newPlayer->next = NULL;
     newPlayer->prev = NULL;
     
@@ -182,8 +182,8 @@ void verificar_vitoria() {
 	PlayerNode* temp = game.lista_jogadores;
 
 	do {
-		// Usar count_mao (de card_node.c)
-		if (count_mao(temp->mao) == 0) {
+		// Usar contar_mao (de card_node.c)
+		if (contar_mao(temp->mao) == 0) {
 			game.jogoTerminado = 1;
 			game.vencedor = temp; // Atribui o ponteiro PlayerNode*
 			TraceLog(LOG_INFO, "JOGO TERMINADO! Vencedor: p%d", game.vencedor->numero);
@@ -225,7 +225,7 @@ void puxar_baralho(PlayerNode** jogador_da_vez, Pilha** baralho) {
 	Pilha* noDoBaralho = *baralho; // O nó do topo do baralho
 
 	// Criar novo nó para a mão
-	CartaNode* nova_mao = create_mao();
+	CartaNode* nova_mao = criar_mao();
 	if (!nova_mao) return; // Falha de alocação
 	
 	nova_mao->carta = noDoBaralho->carta;
@@ -331,8 +331,8 @@ Carta* jogar_pilha(PlayerNode* player, int carta_selecionada) {
 		return NULL;
 	}
 
-	if (indice_base_0 < 0 || indice_base_0 >= count_mao(player->mao)) {
-		TraceLog(LOG_ERROR, "jogar_pilha: Indice invalido %d (total de cartas: %d)", indice_base_0, count_mao(player->mao));
+	if (indice_base_0 < 0 || indice_base_0 >= contar_mao(player->mao)) {
+		TraceLog(LOG_ERROR, "jogar_pilha: Indice invalido %d (total de cartas: %d)", indice_base_0, contar_mao(player->mao));
 		return NULL;
 	}
 
