@@ -221,15 +221,29 @@ void processarTurnoJogador(CartaUI* cartasUI, int numCartasUI, Assets* assets, i
                         return;
 
                     }
-                    if (cartaJogada->valor == TRES) {
+                    else if (cartaJogada->valor == TRES) {
                         processarTurnoCPU(); // 3 joga outra carta aletória
                     }
-                    if (cartaJogada->valor == QUATRO){
+                    else if (cartaJogada->valor == QUATRO){
                         CartaNode* maoTemp = game.jogador_da_vez->mao;
                         game.jogador_da_vez->mao = game.jogador_da_vez->prev->mao;
 						game.jogador_da_vez->prev->mao = maoTemp; // 4 troca a mão com o jogador anterior
 
                     }
+                    else if (cartaJogada->valor == OITO) {
+                        CartaNode* atual = game.jogador_da_vez->mao;
+                        
+                        while (atual != NULL) {
+                            if (atual->carta != NULL && atual->carta->cor != INCOLOR) {
+                                // Trocar para cor aleatória (0=AMARELO, 1=AZUL, 2=VERDE, 3=VERMELHO)
+                                atual->carta->cor = (Cor)GetRandomValue(0, 3);
+                            }
+                            atual = atual->next;
+                        }
+                        ordenar_mao(&game.jogador_da_vez->mao);
+                    }
+
+
                     next_player();
                     return;
                     }
@@ -288,15 +302,29 @@ void processarTurnoCPU() {
                 puxar_baralho(&game.jogador_da_vez, &game.baralho);
                 puxar_baralho(&game.jogador_da_vez, &game.baralho);
             }
-            if (cartaJogada->valor == TRES) {
+            else if (cartaJogada->valor == TRES) {
                 processarTurnoCPU();
             }
-            if (cartaJogada->valor == QUATRO) {
+            else if (cartaJogada->valor == QUATRO) {
                 CartaNode* maoTemp = game.jogador_da_vez->mao;
                 game.jogador_da_vez->mao = game.jogador_da_vez->prev->mao;
                 game.jogador_da_vez->prev->mao = maoTemp;
 
             }
+
+            else if (cartaJogada->valor == OITO) {
+                CartaNode* atual = game.jogador_da_vez->mao;
+                
+                while (atual != NULL) {
+                    if (atual->carta != NULL && atual->carta->cor != INCOLOR) {
+                        // Trocar para cor aleatória (0=AMARELO, 1=AZUL, 2=VERDE, 3=VERMELHO)
+                        atual->carta->cor = (Cor)GetRandomValue(0, 3);
+                    }
+                    atual = atual->next;
+                }
+                ordenar_mao(&game.jogador_da_vez->mao);
+            }
+
             next_player();
             return;
         }
