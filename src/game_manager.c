@@ -49,6 +49,10 @@ void deal_initial_hands(int num_players, int hand_size) {
 		game.jogador_da_vez->numero = i;
 		for (int j = 0; j < hand_size; j++) {
 			puxar_baralho(&game.jogador_da_vez, &game.baralho);
+
+			if (j == hand_size - 1) {
+ 			   ordenar_mao(&game.jogador_da_vez->mao);
+			}
 		}
 		game.jogador_da_vez = game.jogador_da_vez->next;
 	}
@@ -129,7 +133,6 @@ void criar_baralho(Pilha* baralho) {
 
 void initialize_game(int num_players) {
 	create_player_list();
-    // criar_baralho(game.baralho); talvez implementar
 	initialize_baralho(&game.baralho, num_cartas);
 	embaralhar(&game.baralho, &game.pilha);
 	deal_initial_hands(num_players, 7);
@@ -230,6 +233,9 @@ void puxar_baralho(PlayerNode** jogador_da_vez, Pilha** baralho) {
 	nova_mao->carta = noDoBaralho->carta; // A mão aponta para a *mesma* carta
 	nova_mao->next = (*jogador_da_vez)->mao; // Adiciona ao início da mão
 	(*jogador_da_vez)->mao = nova_mao;
+
+	ordenar_mao(&(*jogador_da_vez)->mao);
+
 
 	// Avançar o baralho
 	*baralho = (*baralho)->next;
