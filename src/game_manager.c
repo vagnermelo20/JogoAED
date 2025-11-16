@@ -212,23 +212,11 @@ void desenhar_partida() {}
 #pragma region PlayerNodeBaralho
 
 void puxar_baralho(PlayerNode** jogador_da_vez, Pilha** baralho) {
-	if (!jogador_da_vez || !*jogador_da_vez || !baralho || !*baralho) {
-		TraceLog(LOG_WARNING, "Puxar baralho falhou: jogador ou baralho nulo.");
+	if (!jogador_da_vez || !*jogador_da_vez || !baralho) {
 		return;
 	}
-
-	// if (count(baralho) == 0) { // 'count' é de pilha.c
-	// 	refill(game.pilha, *baralho);
-	// }
-
-	// Verificar se o baralho (pilha) está vazio
-	if (*baralho == NULL) {
-		TraceLog(LOG_INFO, "Baralho vazio, recarregando...");
-		// refill(&game.pilha, baralho); // 'refill' é de pilha.c
-		if (*baralho == NULL) {
-			TraceLog(LOG_ERROR, "Não há cartas para comprar!");
-			return;
-		}
+	if (*baralho == NULL || count(*baralho) == 0) {
+		refill(&game.pilha, baralho);
 	}
 
 	Pilha* noDoBaralho = *baralho; // O nó do topo do baralho
