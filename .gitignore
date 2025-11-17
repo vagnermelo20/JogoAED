@@ -396,10 +396,15 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Premake generated files
+build/build_files/
+build/external/
 build_files
 raylib-master
 Makefile
 /*.sln
+*.make
 
 # Vi and Vim
 *.swp
