@@ -32,5 +32,4 @@ typedef struct Carta {
 } Carta;
 
 //Init
-Carta* create_carta();
-Carta* create_random_carta();
+Carta* criar_carta();

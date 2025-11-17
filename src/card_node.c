@@ -19,7 +19,7 @@ CartaNode* criar_mao() {
     CartaNode* mao = malloc(sizeof(CartaNode));
     if (mao == NULL) return NULL;
     
-    mao->carta = create_carta();
+    mao->carta = criar_carta(); 
     if (mao->carta == NULL) {
         free(mao);
         return NULL;
