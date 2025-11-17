@@ -309,17 +309,14 @@ void desenharBaralho(Pilha* deck, Assets* assets, Vector2 posicao) {
 
 // Desenha informações do jogo
 void desenharInfoJogo( Assets* assets) {
-    // Título
-    DrawText("UNO - Jogo", 20, 20, 30, DARKBLUE);
-
     // Jogador atual com destaque
     char textoJogador[100];
     sprintf(textoJogador, "Turno: p%d", game.jogador_da_vez->numero);
-    DrawText(textoJogador, 20, 60, 25, BLACK);
+    DrawText(textoJogador, 120, 120, 25, WHITE);
 
     // Direção
     const char* direcao = (game.direcao == ANTI_CLOCKWISE) ? "Sentido: >" : "Sentido: <";
-    DrawText(direcao, 20, 95, 20, WHITE);
+    DrawText(direcao, 120, 155, 20, WHITE);
     // Outros jogadores
     int y = 150;
     if (game.jogador_da_vez != NULL) {
