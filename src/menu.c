@@ -96,33 +96,37 @@ MenuState DrawInstrucoes(Texture2D background) {
     DrawText(title, GetScreenWidth() / 2 - titleWidth / 2, 40, titleSize, GOLD);
     
     // Instruções
-    int startY = 120;
+    int startY = 80;
     int lineHeight = 35;
-    int textSize = 20;
+    int textSize = 15;
     
-    DrawText("OBJETIVO:", 50, startY, 25, ORANGE);
+    DrawText("OBJETIVO:", 50, startY, 18, ORANGE);
     DrawText("Seja o primeiro jogador a descartar todas as suas cartas!", 50, startY + 30, textSize, WHITE);
     
-    startY += 80;
-    DrawText("REGRAS BÁSICAS:", 50, startY, 25, ORANGE);
-    DrawText("• Combine a cor ou o número da carta no topo da pilha", 50, startY + 35, textSize, WHITE);
-    DrawText("• Cartas especiais têm efeitos únicos", 50, startY + 35 + lineHeight, textSize, WHITE);
-    DrawText("• Se não puder jogar, compre uma carta do baralho", 50, startY + 35 + lineHeight * 2, textSize, WHITE);
+    startY += 60;
+    DrawText("REGRAS BÁSICAS:", 50, startY, 18, ORANGE);
+    DrawText("Combine a cor ou o número da carta no topo da pilha", 50, startY + 35, textSize, WHITE);
+    DrawText("Cartas especiais têm efeitos únicos", 50, startY + 35 + lineHeight, textSize, WHITE);
+    DrawText("Se não puder jogar, compre uma carta do baralho", 50, startY + 35 + lineHeight * 2, textSize, WHITE);
     
-    startY += 160;
-    DrawText("CARTAS ESPECIAIS:", 50, startY, 25, ORANGE);
-    DrawText("• +2: Próximo jogador compra 2 cartas", 50, startY + 35, textSize, YELLOW);
-    DrawText("• +4: Próximo jogador compra 4 cartas + escolhe cor", 50, startY + 35 + lineHeight, textSize, YELLOW);
-    DrawText("• PULAR: Próximo jogador perde a vez", 50, startY + 35 + lineHeight * 2, textSize, YELLOW);
-    DrawText("• INVERTER: Inverte o sentido do jogo", 50, startY + 35 + lineHeight * 3, textSize, YELLOW);
-    DrawText("• CORINGA: Escolha a próxima cor", 50, startY + 35 + lineHeight * 4, textSize, YELLOW);
+    startY += 130;
+    DrawText("CARTAS ESPECIAIS:", 50, startY, 18, ORANGE);
+    DrawText("+2: Próximo jogador compra 2 cartas", 50, startY + 35, textSize, YELLOW);
+    DrawText("+4: Próximo jogador compra 4 cartas + escolhe cor", 50, startY + 35 + lineHeight, textSize, YELLOW);
+    DrawText("PULAR: Próximo jogador perde a vez", 50, startY + 35 + lineHeight * 2, textSize, YELLOW);
+    DrawText("INVERTER: Inverte o sentido do jogo", 50, startY + 35 + lineHeight * 3, textSize, YELLOW);
+    DrawText("CORINGA: Escolha a próxima cor", 50, startY + 35 + lineHeight * 4, textSize, YELLOW);
     
-    startY += 240;
-    DrawText("CONTROLES:", 90, startY, 25, ORANGE);
-    DrawText("• Clique nas cartas para jogar", 90, startY + 35, textSize, WHITE);
-    DrawText("• Clique no baralho (ou ESPAÇO) para comprar", 90, startY + 35 + lineHeight, textSize, WHITE);
-    DrawText("• Use números 1-4 para escolher cores (cartas coringas)", 90, startY + 35 + lineHeight * 2, textSize, WHITE);
-    
+    startY += 195;
+    DrawText("CONTROLES:", 50, startY, 18, ORANGE);
+    DrawText("Clique nas cartas para jogar", 50, startY + 35, textSize, WHITE);
+    DrawText("Clique no baralho (ou ESPAÇO) para comprar", 50, startY + 35 + lineHeight, textSize, WHITE);
+    DrawText("Use números 1-4 para escolher cores (cartas coringas)", 50, startY + 35 + lineHeight * 2, textSize, WHITE);
+
+    startY += 140;
+    DrawText("CARTAS EXTRAS:", 50, startY, 18, ORANGE);
+    DrawText("Descubra", 50, startY + 35, textSize, WHITE);
+
     // Botão Voltar
     int buttonWidth = 250;
     int buttonHeight = 60;
