@@ -1,113 +1,126 @@
-# Raylib-Quickstart
-A simple cross platform template for setting up a project with the bleeding edge raylib code.
-Works with C or C++.
+# Instruções para Compilar e Executar o Jogo UNO
 
-## Supported Platforms
-Quickstart supports the main 3 desktop platforms:
-* Windows
-* Linux
-* MacOS
+## Pré-requisitos
 
-# Naming projects
-Do not name your game project 'raylib', it will conflict with the raylib library.
+### Linux
+```bash
+sudo apt-get update
+sudo apt-get install build-essential git
+sudo apt-get install libasound2-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxcursor-dev libxinerama-dev
+```
 
-# VSCode Users (all platforms)
-*Note* You must have a compiler toolchain installed in addition to vscode.
+### Windows (MinGW-W64)
+- Baixe e instale o W64devkit de: https://github.com/skeeto/w64devkit/releases
+- OU use o compilador que vem com o raylib installer
 
-* Download the quickstart
-* Rename the folder to your game name
-* Open the folder in VSCode
-* Run the build task ( CTRL+SHIFT+B or F5 )
-* You are good to go
+### MacOS
+```bash
+brew install gcc make
+```
 
-# Windows Users
-There are two compiler toolchains available for windows, MinGW-W64 (a free compiler using GCC), and Microsoft Visual Studio
-## Using MinGW-W64
-* Double click the `build-MinGW-W64.bat` file
-* CD into the folder in your terminal
-  * if you are usiing the W64devkit and have not added it to your system path environment variable, you must use the W64devkit.exe terminal, not CMD.exe
-  * If you want to use cmd.exe or any other terminal, please make sure that gcc/mingw-W64 is in your path environment variable.
-* run `make`
-* You are good to go
+## Compilação
 
-### Note on MinGW-64 versions
-Make sure you have a modern version of MinGW-W64 (not mingw).
-The best place to get it is from the W64devkit from
-https://github.com/skeeto/w64devkit/releases
-or the version installed with the raylib installer
-#### If you have installed raylib from the installer
-Make sure you have added the path
+### Linux
+```bash
+cd build
+./premake5 gmake
+cd ..
+make
+```
 
-`C:\raylib\w64devkit\bin`
+### Windows (MinGW-W64)
+```bash
+# Execute o build-MinGW-W64.bat
+build-MinGW-W64.bat
 
-To your path environment variable so that the compiler that came with raylib can be found.
+# OU manualmente:
+cd build
+premake5.exe gmake
+cd ..
+make
+```
 
-DO NOT INSTALL ANOTHER MinGW-W64 from another source such as msys2, you don't need it.
+### Windows (Visual Studio 2022)
+```bash
+# Execute o build-VisualStudio2022.bat
+build-VisualStudio2022.bat
 
-## Microsoft Visual Studio
-* Run `build-VisualStudio2022.bat`
-* double click the `.sln` file that is generated
-* develop your game
-* you are good to go
+# Depois abra o arquivo .sln gerado e compile no Visual Studio
+```
 
-# Linux Users
-* CD into the build folder
-* run `./premake5 gmake`
-* CD back to the root
-* run `make`
-* you are good to go
+### MacOS
+```bash
+cd build
+./premake5.osx gmake
+cd ..
+make
+```
 
-# MacOS Users
-* CD into the build folder
-* run `./premake5.osx gmake`
-* CD back to the root
-* run `make`
-* you are good to go
+## Executar o Jogo
 
-# Output files
-The built code will be in the bin dir
+Após a compilação, o executável estará na pasta `bin/Debug`:
 
-# Working directories and the resources folder
-The example uses a utility function from `path_utils.h` that will find the resources dir and set it as the current working directory. This is very useful when starting out. If you wish to manage your own working directory you can simply remove the call to the function and the header.
+### Linux/MacOS
+```bash
+./bin/Debug/JogoAED
+```
 
-# Changing to C++
-Simply rename `src/main.c` to `src/main.cpp` and re-run the steps above and do a clean build.
+### Windows
+```bash
+bin\Debug\JogoAED.exe
+```
 
-# Using your own code
-Simply remove `src/main.c` and replace it with your code, and re-run the steps above and do a clean build.
+## Limpeza
 
-# Building for other OpenGL targets
-If you need to build for a different OpenGL version than the default (OpenGL 3.3) you can specify an OpenGL version in your premake command line. Just modify the bat file or add the following to your command line
+Para limpar os arquivos compilados:
 
-## For OpenGL 1.1
-`--graphics=opengl11`
+```bash
+make clean
+```
 
-## For OpenGL 2.1
-`--graphics=opengl21`
+## Como Jogar
 
-## For OpenGL 4.3
-`--graphics=opengl43`
+1. **Menu Inicial**: Clique em "Jogar" para começar uma partida
+2. **Durante o Jogo**:
+   - Clique em uma carta da sua mão para jogá-la (se for válida)
+   - Clique no baralho ou pressione ESPAÇO para comprar uma carta
+   - Quando jogar uma carta INCOLOR, escolha a cor:
+     - 1 - Amarelo
+     - 2 - Azul
+     - 3 - Verde
+     - 4 - Vermelho
 
-## For OpenGLES 2.0
-`--graphics=opengles2`
+3. **Objetivo**: Seja o primeiro jogador a ficar sem cartas na mão!
 
-## For OpenGLES 3.0
-`--graphics=opengles3`
+## Regras do UNO
 
-# License
-Copyright (c) 2020-2025 Jeffery Myers
+- **Carta Válida**: Deve ter a mesma cor OU o mesmo valor da carta no topo da pilha
+- **Cartas Especiais**:
+  - **+2**: Próximo jogador compra 2 cartas
+  - **+4**: Próximo jogador compra 4 cartas (apenas INCOLOR)
+  - **Reverso**: Inverte a direção do jogo
+  - **Bloquear**: Próximo jogador perde a vez
+  - **INCOLOR**: Pode ser jogada a qualquer momento, você escolhe a cor
+  - **Especiais Personalizadas**:
+    - **2**: Puxa mais duas cartas
+    - **3**: Joga novamente
+    - **4**: Troca mão com jogador anterior
+    - **8**: Randomiza cores de todas suas cartas
 
-This software is provided "as-is", without any express or implied warranty. In no event 
-will the authors be held liable for any damages arising from the use of this software.
+## Estrutura do Projeto
 
-Permission is granted to anyone to use this software for any purpose, including commercial 
-applications, and to alter it and redistribute it freely, subject to the following restrictions:
+```
+JogoAED/
+├── assets/          # Imagens das cartas e recursos gráficos
+├── bin/             # Executáveis compilados
+├── build/           # Scripts de compilação (premake)
+├── include/         # Arquivos header (.h)
+├── src/             # Código fonte (.c)
+└── README.md        # Documentação original
+```
 
-  1. The origin of this software must not be misrepresented; you must not claim that you 
-  wrote the original software. If you use this software in a product, an acknowledgment 
-  in the product documentation would be appreciated but is not required.
+## Dependências
 
-  2. Altered source versions must be plainly marked as such, and must not be misrepresented
-  as being the original software.
-
-  3. This notice may not be removed or altered from any source distribution.
+- **raylib**: Biblioteca gráfica (incluída no projeto)
+- **C Compiler**: GCC, Clang, ou MSVC
+- **Make**: Para automação de build
