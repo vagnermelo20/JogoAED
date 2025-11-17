@@ -238,7 +238,7 @@ void desenharInfoJogo( Assets* assets) {
 }
 
 // Desenha a tela completa
-void desenharTela(Assets* assets, CartaUI* cartasJogador, int numCartasJogador, Texture2D background, Player* jogadorHumano) {
+void desenharTela(Assets* assets, CartaUI* cartasJogador, int numCartasJogador, Texture2D background, CartaNode* jogadorHumano) {
     BeginDrawing();
 
     // Desenhar background

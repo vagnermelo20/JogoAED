@@ -27,10 +27,10 @@ typedef struct CartaUI{
     int selecionada;
 } CartaUI;
 
-// Funções de renderização
+// Funï¿½ï¿½es de renderizaï¿½ï¿½o
 Assets carregarAssets();
 void descarregarAssets(Assets* assets);
-void desenharTela(Assets* assets, CartaUI* cartasJogador, int numCartasJogador, Texture2D background, Player* jogadorHumano);
+void desenharTela(Assets* assets, CartaUI* cartasJogador, int numCartasJogador, Texture2D background, CartaNode* jogadorHumano);
 void desenharCarta(Carta* carta, Vector2 posicao, Assets* assets, int mostrarFrente);
 void desenharMaoJogador(CartaNode* mao, Assets* assets, CartaUI* cartasUI, int* numCartas);
 void desenharPilhaJogo(Pilha** pile, Assets* assets, Cor corAtual);

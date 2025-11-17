@@ -5,7 +5,6 @@
 #include "raylib.h"
 #include "carta.h"
 #include "pilha.h"
-#include "player.h"
 
 #include "game_manager.h"
 #include "render_game.h"

@@ -1,4 +1,3 @@
-#pragma once
 #include "game_manager.h"
 #include "pilha.h"
 #include "raylib.h"
@@ -100,13 +99,13 @@ void criar_baralho(Pilha* baralho) {
 		Carta carta;
 		carta.cor = cor;
 		carta.valor = ZERO;
-		adicionar_carta(game.baralho, carta);
+		adicionar_carta(&game.baralho, carta);
 
 		// Dois de cada carta de 1-9 e especiais
 		for (int copia = 0; copia < 2; copia++) {
 			for (int valor = UM; valor <= BLOQUEAR; valor++) {
 				carta.cor = cor;
-				adicionar_carta(game.baralho, carta);
+				adicionar_carta(&game.baralho, carta);
 			}
 		}
 	}
@@ -116,7 +115,7 @@ void criar_baralho(Pilha* baralho) {
 		Carta carta;
 		carta.cor = INCOLOR;
 		carta.valor = BLOQUEAR; // Valor não importa para curinga simples, mas não pode ser MAIS_QUATRO
-		adicionar_carta(baralho, carta);
+		adicionar_carta(&baralho, carta);
 	}
 
 	// 4 curingas +4
@@ -124,7 +123,7 @@ void criar_baralho(Pilha* baralho) {
 		Carta carta;
 		carta.cor = INCOLOR;
 		carta.valor = MAIS_4;
-		adicionar_carta(baralho, carta);
+		adicionar_carta(&baralho, carta);
 	}
 }
 
@@ -247,14 +246,14 @@ void puxar_baralho(PlayerNode** jogador_da_vez, Pilha** baralho) {
 // Fun��o ser� usada depois quando um jogador receber um +2
 void puxar_2_cartas(PlayerNode** jogador_da_vez, Pilha** baralho) {
 	if (!*jogador_da_vez || !jogador_da_vez || !*baralho || !baralho || !((*baralho)->carta)) return;;
-	for (int i = 0; i < 2; i++) puxar_baralho(jogador_da_vez, &baralho);
+	for (int i = 0; i < 2; i++) puxar_baralho(jogador_da_vez, baralho);
 	return;
 }
 
 // Fun��o ser� usada depois quando um jogador receber um +4
 void puxar_4_cartas(PlayerNode** jogador_da_vez, Pilha** baralho) {
 	if (!*jogador_da_vez || !jogador_da_vez || !*baralho || !baralho || !((*baralho)->carta)) return;
-	for (int i = 0; i < 4; i++) puxar_baralho(*jogador_da_vez, &baralho);
+	for (int i = 0; i < 4; i++) puxar_baralho(jogador_da_vez, baralho);
 	return;
 }
 
