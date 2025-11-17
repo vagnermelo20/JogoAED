@@ -102,7 +102,7 @@ make clean
   - **Bloquear**: Próximo jogador perde a vez
   - **INCOLOR**: Pode ser jogada a qualquer momento, você escolhe a cor
   - **Especiais Personalizadas**:
-    - **2**: Joga mais uma carta
+    - **2**: Puxa mais duas cartas
     - **3**: Joga novamente
     - **4**: Troca mão com jogador anterior
     - **8**: Randomiza cores de todas suas cartas
@@ -118,17 +118,6 @@ JogoAED/
 ├── src/             # Código fonte (.c)
 └── README.md        # Documentação original
 ```
-
-## Problemas Comuns
-
-### Erro: "raylib not found"
-O projeto já inclui o raylib. Certifique-se de estar compilando na ordem correta (premake primeiro, depois make).
-
-### Erro: "cannot find -lm" no Windows
-Use o W64devkit ou certifique-se que o MinGW-W64 está no PATH do sistema.
-
-### Tela preta ao executar
-Verifique se a pasta `assets/` está no mesmo diretório do executável.
 
 ## Dependências
 
