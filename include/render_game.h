@@ -27,12 +27,12 @@ typedef struct CartaUI{
     int selecionada;
 } CartaUI;
 
-// Fun��es de renderiza��o
 Assets carregarAssets();
 void descarregarAssets(Assets* assets);
 void desenharTela(Assets* assets, CartaUI* cartasJogador, int numCartasJogador, Texture2D background, CartaNode* jogadorHumano);
 void desenharCarta(Carta* carta, Vector2 posicao, Assets* assets, int mostrarFrente);
 void desenharMaoJogador(CartaNode* mao, Assets* assets, CartaUI* cartasUI, int* numCartas);
+void desenharMaosOutrosJogadores(PlayerNode* jogadorHumano, Assets* assets);
 void desenharPilhaJogo(Pilha** pile, Assets* assets, Cor corAtual);
 void desenharBaralho(Pilha* pilha, Assets* assets, Vector2 posicao);
 void desenharInfoJogo(Assets* assets);

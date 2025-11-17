@@ -118,10 +118,10 @@ MenuState DrawInstrucoes(Texture2D background) {
     DrawText("• CORINGA: Escolha a próxima cor", 50, startY + 35 + lineHeight * 4, textSize, YELLOW);
     
     startY += 240;
-    DrawText("CONTROLES:", 50, startY, 25, ORANGE);
-    DrawText("• Clique nas cartas para jogar", 50, startY + 35, textSize, WHITE);
-    DrawText("• Clique no baralho (ou ESPAÇO) para comprar", 50, startY + 35 + lineHeight, textSize, WHITE);
-    DrawText("• Use números 1-4 para escolher cores (cartas coringas)", 50, startY + 35 + lineHeight * 2, textSize, WHITE);
+    DrawText("CONTROLES:", 90, startY, 25, ORANGE);
+    DrawText("• Clique nas cartas para jogar", 90, startY + 35, textSize, WHITE);
+    DrawText("• Clique no baralho (ou ESPAÇO) para comprar", 90, startY + 35 + lineHeight, textSize, WHITE);
+    DrawText("• Use números 1-4 para escolher cores (cartas coringas)", 90, startY + 35 + lineHeight * 2, textSize, WHITE);
     
     // Botão Voltar
     int buttonWidth = 250;

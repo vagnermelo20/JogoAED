@@ -154,6 +154,111 @@ void desenharMaoJogador(CartaNode* mao, Assets* assets, CartaUI* cartasUI, int* 
     *numCartas = i;
 }
 
+// Desenha as mãos dos outros jogadores (cartas viradas para baixo)
+void desenharMaosOutrosJogadores(PlayerNode* jogadorHumano, Assets* assets) {
+    if (jogadorHumano == NULL) return;
+    
+    // Tamanho reduzido das cartas dos outros jogadores
+    float cartaLargura = LARGURA_CARTA * 0.6f;  // 60% do tamanho original
+    float cartaAltura = ALTURA_CARTA * 0.6f;
+    float espacamento = 8;
+    
+    PlayerNode* atual = jogadorHumano->next;
+    int posicaoJogador = 0;  // 0 = topo, 1 = direita, 2 = esquerda
+    
+    // Percorrer os outros jogadores (máximo 3 para exibir)
+    while (atual != NULL && atual != jogadorHumano && posicaoJogador < 3) {
+        int numCartas = contar_mao(atual->mao);
+        int numCartasExibir = numCartas > 7 ? 7 : numCartas;  // Limitar a 7 cartas
+        
+        // Determinar posição base dependendo do jogador
+        Vector2 posBase;
+        float rotacao = 0.0f;  // Rotação em graus
+        
+        if (posicaoJogador == 0) {
+            // Jogador no topo (sem rotação)
+            float totalLargura = numCartasExibir * (cartaLargura + espacamento);
+            posBase.x = (LARGURA_TELA - totalLargura) / 2;
+            posBase.y = 20;
+            rotacao = 0.0f;
+        } else if (posicaoJogador == 1) {
+            // Jogador à direita (rotação 90° anti-horário)
+            float totalAltura = numCartasExibir * (cartaLargura + espacamento);  // Invertido por causa da rotação
+            posBase.x = LARGURA_TELA - 20;
+            posBase.y = (ALTURA_TELA - totalAltura) / 2;
+            rotacao = -90.0f;
+        } else {
+            // Jogador à esquerda (rotação 90° horário)
+            float totalAltura = numCartasExibir * (cartaLargura + espacamento);  // Invertido por causa da rotação
+            posBase.x = 20 + cartaAltura;  // Ajuste para rotação
+            posBase.y = (ALTURA_TELA - totalAltura) / 2;
+            rotacao = 90.0f;
+        }
+        
+        // Desenhar as cartas
+        for (int i = 0; i < numCartasExibir; i++) {  // Limite de 7 cartas visíveis
+            Vector2 pos;
+            Rectangle destRect;
+            Rectangle sourceRect = (Rectangle){ 0, 0, (float)assets->cartaVerso.width, (float)assets->cartaVerso.height };
+            Vector2 origin;
+            
+            if (posicaoJogador == 0) {
+                // Topo - sem rotação
+                pos.x = posBase.x + i * (cartaLargura + espacamento);
+                pos.y = posBase.y;
+                destRect = (Rectangle){ pos.x, pos.y, cartaLargura, cartaAltura };
+                origin = (Vector2){0, 0};
+                DrawTexturePro(assets->cartaVerso, sourceRect, destRect, origin, 0.0f, WHITE);
+            } else if (posicaoJogador == 1) {
+                // Direita - rotação -90°
+                pos.x = posBase.x;
+                pos.y = posBase.y + i * (cartaLargura + espacamento);
+                // Para rotação, o destRect usa as dimensões invertidas
+                destRect = (Rectangle){ pos.x, pos.y, cartaLargura, cartaAltura };
+                origin = (Vector2){0, cartaAltura};  // Origem no canto inferior esquerdo
+                DrawTexturePro(assets->cartaVerso, sourceRect, destRect, origin, rotacao, WHITE);
+            } else {
+                // Esquerda - rotação 90°
+                pos.x = posBase.x;
+                pos.y = posBase.y + i * (cartaLargura + espacamento);
+                destRect = (Rectangle){ pos.x, pos.y, cartaLargura, cartaAltura };
+                origin = (Vector2){cartaLargura, 0};  // Origem no canto superior direito
+                DrawTexturePro(assets->cartaVerso, sourceRect, destRect, origin, rotacao, WHITE);
+            }
+        }
+        
+        // Desenhar label do jogador
+        char labelJogador[20];
+        sprintf(labelJogador, "P%d (%d)", atual->numero, numCartas);
+        int labelWidth = MeasureText(labelJogador, 18);
+        
+        Vector2 labelPos;
+        Color labelColor = (atual == game.jogador_da_vez) ? GOLD : WHITE;
+        
+        if (posicaoJogador == 0) {
+            // Topo - label abaixo das cartas
+            float totalLargura = numCartasExibir * (cartaLargura + espacamento);
+            labelPos.x = (LARGURA_TELA - labelWidth) / 2;  // Centralizar com as cartas
+            labelPos.y = posBase.y + cartaAltura + 8;  // Mais espaço entre cartas e label
+        } else if (posicaoJogador == 1) {
+            // Direita - label à esquerda das cartas
+            labelPos.x = LARGURA_TELA - labelWidth - 15;
+            labelPos.y = posBase.y - 30;  // Acima das cartas com mais espaço
+        } else {
+            // Esquerda - label à direita das cartas (após a largura da carta rotacionada)
+            labelPos.x = 25 + cartaAltura + 10;  // Distância segura das cartas rotacionadas
+            labelPos.y = posBase.y - 30;  // Acima das cartas com mais espaço
+        }
+        
+        // Fundo para o label com padding maior
+        DrawRectangle(labelPos.x - 5, labelPos.y - 3, labelWidth + 10, 24, Fade(BLACK, 0.7f));
+        DrawText(labelJogador, labelPos.x, labelPos.y, 18, labelColor);
+        
+        atual = atual->next;
+        posicaoJogador++;
+    }
+}
+
 // Desenha a pilha de jogo
 void desenharPilhaJogo(Pilha** pile, Assets* assets, Cor corAtual) {
     Vector2 pos = { LARGURA_TELA / 2 - LARGURA_CARTA - 60, ALTURA_TELA / 2 - ALTURA_CARTA / 2 };
@@ -223,18 +328,12 @@ void desenharInfoJogo( Assets* assets) {
             char info[100];
 
             int numCartas = contar_mao(temp->mao);
-            sprintf(info, "p%d: %d cartas", temp->numero, numCartas);
 
             DrawText(info, LARGURA_TELA - 200, y, 18, WHITE);
             y += 25;
             temp = temp->next;
         }
     }
-
-    // Instruções
-    DrawText("Clique em uma carta para jogar", 20, ALTURA_TELA - 225, 18, WHITE);
-    DrawText("Clique no baralho ou presione espaço para comprar", 20, ALTURA_TELA - 200, 18, WHITE);
-
 }
 
 // Desenha a tela completa

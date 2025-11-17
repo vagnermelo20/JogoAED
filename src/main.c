@@ -76,6 +76,7 @@ int main() {
                 desenharPilhaJogo(&game.pilha, &assets, game.corAtual);
                 Vector2 posBaralho = { LARGURA_TELA / 2 + 60, ALTURA_TELA / 2 - ALTURA_CARTA / 2 };
                 desenharBaralho(game.baralho, &assets, posBaralho);
+                desenharMaosOutrosJogadores(jogadorHumano, &assets);
                 int numCartas;
                 desenharMaoJogador(jogadorHumano->mao, &assets, cartasUI, &numCartas);
                 
@@ -182,6 +183,7 @@ int main() {
         Vector2 posBaralho = { LARGURA_TELA / 2 + 60, ALTURA_TELA / 2 - ALTURA_CARTA / 2 };
         desenharBaralho(game.baralho, &assets, posBaralho);
         DrawText("Comprar", posBaralho.x + 10, posBaralho.y - 25, 18, BLACK);
+        desenharMaosOutrosJogadores(jogadorHumano, &assets);
         
         int numCartas;
         desenharMaoJogador(jogadorHumano->mao, &assets, cartasUI, &numCartas);
