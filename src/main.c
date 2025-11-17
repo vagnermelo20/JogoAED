@@ -113,7 +113,7 @@ int main() {
                     }
                     
                     // Texto ESC para sair
-                    DrawText("Pressione ESC para sair", LARGURA_TELA / 2 - 150, ALTURA_TELA / 2 + 90, 20, LIGHTGRAY);
+                    DrawText("Pressione ESC para sair", LARGURA_TELA / 2 - 150, ALTURA_TELA / 2, 20, LIGHTGRAY);
                 }
                 EndDrawing();
                 continue;
