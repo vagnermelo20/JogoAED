@@ -39,6 +39,7 @@ Assets carregarAssets() {
         }
     }
 
+
     // Carregar INCOLOR (ÍNDICE 4 - separado)
     Image imgWild = LoadImage("assets/wild.png");
     ImageResize(&imgWild, LARGURA_CARTA, ALTURA_CARTA);
@@ -164,7 +165,7 @@ void desenharMaosOutrosJogadores(PlayerNode* jogadorHumano, Assets* assets) {
     float espacamento = 8;
     
     PlayerNode* atual = jogadorHumano->next;
-    int posicaoJogador = 0;  // 0 = topo, 1 = direita, 2 = esquerda
+    int posicaoJogador = 0;  // 0 = direita, 1 = topo,  2 = esquerda
     
     // Percorrer os outros jogadores (máximo 3 para exibir)
     while (atual != NULL && atual != jogadorHumano && posicaoJogador < 3) {
@@ -175,18 +176,18 @@ void desenharMaosOutrosJogadores(PlayerNode* jogadorHumano, Assets* assets) {
         Vector2 posBase;
         float rotacao = 0.0f;  // Rotação em graus
         
-        if (posicaoJogador == 0) {
+        if (posicaoJogador == 0) {// Jogador à direita (rotação 90° anti-horário)
+            float totalAltura = numCartasExibir * (cartaLargura + espacamento);  // Invertido por causa da rotação
+            posBase.x = LARGURA_TELA - 20;
+            posBase.y = (ALTURA_TELA - totalAltura) / 2;
+            rotacao = -90.0f;
+        } else if (posicaoJogador == 1) {
             // Jogador no topo (sem rotação)
             float totalLargura = numCartasExibir * (cartaLargura + espacamento);
             posBase.x = (LARGURA_TELA - totalLargura) / 2;
             posBase.y = 20;
             rotacao = 0.0f;
-        } else if (posicaoJogador == 1) {
-            // Jogador à direita (rotação 90° anti-horário)
-            float totalAltura = numCartasExibir * (cartaLargura + espacamento);  // Invertido por causa da rotação
-            posBase.x = LARGURA_TELA - 20;
-            posBase.y = (ALTURA_TELA - totalAltura) / 2;
-            rotacao = -90.0f;
+            
         } else {
             // Jogador à esquerda (rotação 90° horário)
             float totalAltura = numCartasExibir * (cartaLargura + espacamento);  // Invertido por causa da rotação
@@ -202,21 +203,22 @@ void desenharMaosOutrosJogadores(PlayerNode* jogadorHumano, Assets* assets) {
             Rectangle sourceRect = (Rectangle){ 0, 0, (float)assets->cartaVerso.width, (float)assets->cartaVerso.height };
             Vector2 origin;
             
-            if (posicaoJogador == 0) {
-                // Topo - sem rotação
-                pos.x = posBase.x + i * (cartaLargura + espacamento);
-                pos.y = posBase.y;
-                destRect = (Rectangle){ pos.x, pos.y, cartaLargura, cartaAltura };
-                origin = (Vector2){0, 0};
-                DrawTexturePro(assets->cartaVerso, sourceRect, destRect, origin, 0.0f, WHITE);
-            } else if (posicaoJogador == 1) {
-                // Direita - rotação -90°
+            if (posicaoJogador == 0) {// Direita - rotação -90°
                 pos.x = posBase.x;
                 pos.y = posBase.y + i * (cartaLargura + espacamento);
                 // Para rotação, o destRect usa as dimensões invertidas
                 destRect = (Rectangle){ pos.x, pos.y, cartaLargura, cartaAltura };
                 origin = (Vector2){0, cartaAltura};  // Origem no canto inferior esquerdo
                 DrawTexturePro(assets->cartaVerso, sourceRect, destRect, origin, rotacao, WHITE);
+
+            } else if (posicaoJogador == 1) {
+                // Topo - sem rotação
+                pos.x = posBase.x + i * (cartaLargura + espacamento);
+                pos.y = posBase.y;
+                destRect = (Rectangle){ pos.x, pos.y, cartaLargura, cartaAltura };
+                origin = (Vector2){0, 0};
+                DrawTexturePro(assets->cartaVerso, sourceRect, destRect, origin, 0.0f, WHITE);
+                
             } else {
                 // Esquerda - rotação 90°
                 pos.x = posBase.x;
@@ -235,19 +237,19 @@ void desenharMaosOutrosJogadores(PlayerNode* jogadorHumano, Assets* assets) {
         Vector2 labelPos;
         Color labelColor = (atual == game.jogador_da_vez) ? GOLD : WHITE;
         
-        if (posicaoJogador == 0) {
+        if (posicaoJogador == 0) {// Direita - label à esquerda das cartas
+            labelPos.x = LARGURA_TELA - 25 - ALTURA_CARTA - 8;
+            labelPos.y = ALTURA_TELA / 2;  // Acima das cartas com mais espaço
+        } else if (posicaoJogador == 1) {
             // Topo - label abaixo das cartas
             float totalLargura = numCartasExibir * (cartaLargura + espacamento);
             labelPos.x = (LARGURA_TELA - labelWidth) / 2;  // Centralizar com as cartas
             labelPos.y = posBase.y + cartaAltura + 8;  // Mais espaço entre cartas e label
-        } else if (posicaoJogador == 1) {
-            // Direita - label à esquerda das cartas
-            labelPos.x = LARGURA_TELA - labelWidth - 15;
-            labelPos.y = posBase.y - 30;  // Acima das cartas com mais espaço
+            
         } else {
             // Esquerda - label à direita das cartas (após a largura da carta rotacionada)
             labelPos.x = 25 + cartaAltura + 10;  // Distância segura das cartas rotacionadas
-            labelPos.y = posBase.y - 30;  // Acima das cartas com mais espaço
+            labelPos.y = ALTURA_TELA / 2;  // Acima das cartas com mais espaço
         }
         
         // Fundo para o label com padding maior
@@ -322,17 +324,6 @@ void desenharInfoJogo( Assets* assets) {
     int y = 150;
     if (game.jogador_da_vez != NULL) {
         PlayerNode* temp = game.jogador_da_vez->next;
-
-        // 2. O loop deve parar se a lista for quebrada (temp == NULL) ou se der a volta
-        while (temp != NULL && temp != game.jogador_da_vez) {
-            char info[100];
-
-            int numCartas = contar_mao(temp->mao);
-
-            DrawText(info, LARGURA_TELA - 200, y, 18, WHITE);
-            y += 25;
-            temp = temp->next;
-        }
     }
 }
 
@@ -367,7 +358,7 @@ void desenharTela(Assets* assets, CartaUI* cartasJogador, int numCartasJogador, 
         int larguraTexto = MeasureText(mensagem, 50);
         DrawText(mensagem, LARGURA_TELA / 2 - larguraTexto / 2, ALTURA_TELA / 2 - 50, 50, GOLD);
 
-        DrawText("Pressione ESC para sair", LARGURA_TELA / 2 - 150, ALTURA_TELA / 2 + 20, 25, WHITE);
+        DrawText("Pressione ESC para sair", LARGURA_TELA / 2 , ALTURA_TELA / 2 + 120, 25, WHITE);
     }
 
     EndDrawing();

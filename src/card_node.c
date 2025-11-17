@@ -52,7 +52,7 @@ void ordenar_mao(CartaNode** head) { //bubblesort v1
         CartaNode* atual = *head;
         
         for (int j = len - 1; j >= i; j--) {
-            // Navegar até a posição j e depois pro j - 1, pra frazer a troca
+            // Navegar até a posição j e depois pro j - 1, pra fazer a troca
             CartaNode* node_j = *head;
             for (int k = 0; k < j; k++) {
                 node_j = node_j->next;
