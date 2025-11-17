@@ -8,6 +8,7 @@
 
 #include "game_manager.h"
 #include "render_game.h"
+#include "menu.h"
 
 #define MAX_CARTAS_UI 20
 
@@ -21,42 +22,101 @@ int main() {
 
     srand(time(NULL));
 
-    Assets assets = carregarAssets();
-    initialize_game(4);
-
-    CartaUI cartasUI[MAX_CARTAS_UI];
-    int numCartasUI = 0;
-    int aguardandoEscolhaCor = 0;
-    Carta* cartaPendenteEfeito = NULL;
     Texture2D background = LoadTexture("assets/background_2.png");
-
-    PlayerNode* jogadorHumano = game.jogador_da_vez;
-
-    // Loop principal
+    
+    int voltarAoMenu = 0;
+    
+    // Loop principal do jogo (menu + jogo)
     while (!WindowShouldClose()) {
-        verificar_vitoria();
-
-        if (game.jogoTerminado) {
-            BeginDrawing();
-            DrawTexture(background, 0, 0, WHITE);
-            desenharInfoJogo(&assets);
-            desenharPilhaJogo(&game.pilha, &assets, game.corAtual);
-            Vector2 posBaralho = { LARGURA_TELA / 2 + 60, ALTURA_TELA / 2 - ALTURA_CARTA / 2 };
-            desenharBaralho(game.baralho, &assets, posBaralho);
-            int numCartas;
-            desenharMaoJogador(jogadorHumano->mao, &assets, cartasUI, &numCartas);
-            
-            if (game.vencedor != NULL) {
-                DrawRectangle(0, 0, LARGURA_TELA, ALTURA_TELA, Fade(BLACK, 0.7f));
-                char mensagem[100];
-                sprintf(mensagem, "p%d VENCEU!", game.vencedor->numero);
-                int larguraTexto = MeasureText(mensagem, 50);
-                DrawText(mensagem, LARGURA_TELA / 2 - larguraTexto / 2, ALTURA_TELA / 2 - 50, 50, GOLD);
-                DrawText("Pressione ESC para sair", LARGURA_TELA / 2 - 150, ALTURA_TELA / 2 + 20, 25, WHITE);
+        // Estado do menu
+        MenuState estadoMenu = MENU_PRINCIPAL;
+        int jogoIniciado = 0;
+        voltarAoMenu = 0;
+        
+        // Loop do menu
+        while (!WindowShouldClose() && !jogoIniciado) {
+            if (estadoMenu == MENU_PRINCIPAL) {
+                estadoMenu = DrawMenu(background);
+                if (estadoMenu == MENU_JOGAR) {
+                    jogoIniciado = 1;
+                }
+            } else if (estadoMenu == MENU_INSTRUCOES) {
+                estadoMenu = DrawInstrucoes(background);
             }
-            EndDrawing();
-            continue;
         }
+        
+        // Se o usuário fechou a janela no menu, sai
+        if (!jogoIniciado) {
+            break;
+        }
+
+        // Resetar completamente o estado do jogo
+        memset(&game, 0, sizeof(GameState));
+        
+        Assets assets = carregarAssets();
+        initialize_game(4);
+
+        CartaUI cartasUI[MAX_CARTAS_UI];
+        int numCartasUI = 0;
+        int aguardandoEscolhaCor = 0;
+        Carta* cartaPendenteEfeito = NULL;
+
+        PlayerNode* jogadorHumano = game.jogador_da_vez;
+
+        // Loop principal do jogo
+        while (!WindowShouldClose() && !voltarAoMenu) {
+            verificar_vitoria();
+
+            if (game.jogoTerminado) {
+                Vector2 mousePos = GetMousePosition();
+                
+                BeginDrawing();
+                DrawTexture(background, 0, 0, WHITE);
+                desenharInfoJogo(&assets);
+                desenharPilhaJogo(&game.pilha, &assets, game.corAtual);
+                Vector2 posBaralho = { LARGURA_TELA / 2 + 60, ALTURA_TELA / 2 - ALTURA_CARTA / 2 };
+                desenharBaralho(game.baralho, &assets, posBaralho);
+                int numCartas;
+                desenharMaoJogador(jogadorHumano->mao, &assets, cartasUI, &numCartas);
+                
+                if (game.vencedor != NULL) {
+                    DrawRectangle(0, 0, LARGURA_TELA, ALTURA_TELA, Fade(BLACK, 0.7f));
+                    char mensagem[100];
+                    sprintf(mensagem, "p%d VENCEU!", game.vencedor->numero);
+                    int larguraTexto = MeasureText(mensagem, 50);
+                    DrawText(mensagem, LARGURA_TELA / 2 - larguraTexto / 2, ALTURA_TELA / 2 - 100, 50, GOLD);
+                    
+                    // Botão Voltar ao Menu
+                    int buttonWidth = 250;
+                    int buttonHeight = 60;
+                    Rectangle menuButton = {
+                        LARGURA_TELA / 2 - buttonWidth / 2,
+                        ALTURA_TELA / 2,
+                        buttonWidth,
+                        buttonHeight
+                    };
+                    
+                    bool hoveringMenu = CheckCollisionPointRec(mousePos, menuButton);
+                    Color menuColor = hoveringMenu ? Fade(GREEN, 0.95f) : GREEN;
+                    
+                    DrawRectangleRec(menuButton, menuColor);
+                    DrawRectangleLinesEx(menuButton, 3, BLACK);
+                    
+                    const char* menuText = "VOLTAR AO MENU";
+                    int menuTextWidth = MeasureText(menuText, 25);
+                    DrawText(menuText, menuButton.x + (menuButton.width - menuTextWidth) / 2,
+                             menuButton.y + (menuButton.height - 25) / 2, 25, WHITE);
+                    
+                    if (hoveringMenu && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                        voltarAoMenu = 1;
+                    }
+                    
+                    // Texto ESC para sair
+                    DrawText("Pressione ESC para sair", LARGURA_TELA / 2 - 150, ALTURA_TELA / 2 + 90, 20, LIGHTGRAY);
+                }
+                EndDrawing();
+                continue;
+            }
 
         desenharMaoJogador(jogadorHumano->mao, &assets, cartasUI, &numCartasUI);
 
@@ -152,9 +212,13 @@ int main() {
         EndDrawing();
     }
 
-    UnloadTexture(background);
+    // Liberar recursos do jogo antes de voltar ao menu
     descarregarAssets(&assets);
     liberarJogo();
+}
+
+    // Fim do loop principal (menu + jogo)
+    UnloadTexture(background);
     CloseWindow();
 
     return 0;
