@@ -1,11 +1,11 @@
 #pragma once
 
 typedef enum Cor {
-    AMARELO,   // 0 - yellow
-    AZUL,      // 1 - blue
-    VERDE,     // 2 - green
-    VERMELHO,  // 3 - red
-    INCOLOR    // 4
+    INCOLOR,   // 0 - NULL / SPECIAL
+    AMARELO,   // 1 - yellow
+    AZUL,      // 2 - blue
+    VERDE,     // 3 - green
+    VERMELHO  // 4 - red
 } Cor;
 
 typedef enum Valor {
